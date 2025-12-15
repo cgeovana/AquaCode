@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AquaCode - Cadastro</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .register-container {
+            background: white;
+            border-radius: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+            max-width: 900px;
+            width: 100%;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+        }
+
+        .register-left {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 60px 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .register-left h1 {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+        }
+
+        .register-left p {
+            font-size: 1.1em;
+            opacity: 0.9;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .benefits {
+            margin-top: 30px;
+        }
+
+        .benefit-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            font-size: 0.95em;
+        }
+
+        .benefit-item span {
+            font-size: 1.5em;
+            margin-right: 10px;
+        }
+
+        .register-right {
+            padding: 60px 40px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .register-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .register-header h2 {
+            color: #2c3e50;
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .register-header p {
+            color: #666;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            color: #2c3e50;
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 0.9em;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1em;
+            transition: all 0.3s;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .btn-submit {
+            width: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+            margin-top: 10px;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .login-link {
+            text-align: center;
+            margin-top: 20px;
+            color: #666;
+        }
+
+        .login-link a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .login-link a:hover {
+            text-decoration: underline;
+        }
+
+        .back-home {
+            text-align: center;
+            margin-top: 15px;
+        }
+
+        .back-home a {
+            color: #999;
+            text-decoration: none;
+            font-size: 0.9em;
+        }
+
+        .back-home a:hover {
+            color: #667eea;
+        }
+
+        .error-message {
+            background: #ffe0e0;
+            color: #c00;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+            font-size: 0.9em;
+        }
+
+        .success-message {
+            background: #e0ffe0;
+            color: #0a0;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+            font-size: 0.9em;
+        }
+
+        .password-strength {
+            margin-top: 5px;
+            font-size: 0.85em;
+        }
+
+        .strength-bar {
+            height: 4px;
+            background: #e0e0e0;
+            border-radius: 2px;
+            margin-top: 5px;
+            overflow: hidden;
+        }
+
+        .strength-bar-fill {
+            height: 100%;
+            width: 0;
+            transition: all 0.3s;
+        }
+
+        .strength-weak { background: #ff4444; width: 33%; }
+        .strength-medium { background: #ffaa00; width: 66%; }
+        .strength-strong { background: #00cc00; width: 100%; }
+
+        @media (max-width: 768px) {
+            .register-container {
+                grid-template-columns: 1fr;
+            }
+
+            .register-left {
+                display: none;
+            }
+
+            .register-right {
+                max-height: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="register-container">
+        <div class="register-left">
+            <h1>🐋 AquaCode</h1>
+            <p>Junte-se a nós na missão de proteger os oceanos!</p>
+            
+            <div class="benefits">
+                <div class="benefit-item">
+                    <span>✓</span>
+                    <div>Acesso ao sistema de gerenciamento de animais marinhos</div>
+                </div>
+                <div class="benefit-item">
+                    <span>✓</span>
+                    <div>Visualize e comente sobre os animais</div>
+                </div>
+                <div class="benefit-item">
+                    <span>✓</span>
+                    <div>Acompanhe o trabalho de conservação</div>
+                </div>
+                <div class="benefit-item">
+                    <span>✓</span>
+                    <div>Participe da comunidade AquaCode</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="register-right">
+            <div class="register-header">
+                <h2>Criar Conta</h2>
+                <p>Preencha os dados abaixo</p>
+            </div>
+
+            <div id="errorMessage" class="error-message"></div>
+            <div id="successMessage" class="success-message"></div>
+
+            <form id="registerForm" onsubmit="fazerCadastro(event)">
+                <div class="form-group">
+                    <label for="nome">Nome Completo *</label>
+                    <input type="text" id="nome" required placeholder="Digite seu nome completo">
+                </div>
+
+                <div class="form-group">
+                    <label for="email">E-mail *</label>
+                    <input type="email" id="email" required placeholder="seu@email.com">
+                </div>
+
+                <div class="form-group">
+                    <label for="usuario">Usuário *</label>
+                    <input type="text" id="usuario" required minlength="3" placeholder="Escolha um nome de usuário">
+                </div>
+
+                <div class="form-group">
+                    <label for="senha">Senha *</label>
+                    <input type="password" id="senha" required minlength="6" placeholder="Mínimo 6 caracteres" oninput="checkPasswordStrength()">
+                    <div class="password-strength">
+                        <div class="strength-bar">
+                            <div id="strengthBar" class="strength-bar-fill"></div>
+                        </div>
+                        <span id="strengthText" style="color: #999; font-size: 0.85em;"></span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="confirmarSenha">Confirmar Senha *</label>
+                    <input type="password" id="confirmarSenha" required minlength="6" placeholder="Digite a senha novamente">
+                </div>
+
+                <button type="submit" class="btn-submit">Criar Conta</button>
+            </form>
+
+            <div class="login-link">
+                Já tem uma conta? <a href="/login">Fazer login</a>
+            </div>
+
+            <div class="back-home">
+                <a href="/">← Voltar para página inicial</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function checkPasswordStrength() {
+            const password = document.getElementById('senha').value;
+            const strengthBar = document.getElementById('strengthBar');
+            const strengthText = document.getElementById('strengthText');
+            
+            let strength = 0;
+            if (password.length >= 6) strength++;
+            if (password.length >= 10) strength++;
+            if (/[A-Z]/.test(password)) strength++;
+            if (/[0-9]/.test(password)) strength++;
+            if (/[^A-Za-z0-9]/.test(password)) strength++;
+            
+            strengthBar.className = 'strength-bar-fill';
+            if (strength <= 2) {
+                strengthBar.classList.add('strength-weak');
+                strengthText.textContent = 'Senha fraca';
+                strengthText.style.color = '#ff4444';
+            } else if (strength <= 4) {
+                strengthBar.classList.add('strength-medium');
+                strengthText.textContent = 'Senha média';
+                strengthText.style.color = '#ffaa00';
+            } else {
+                strengthBar.classList.add('strength-strong');
+                strengthText.textContent = 'Senha forte';
+                strengthText.style.color = '#00cc00';
+            }
+        }
+
+        async function fazerCadastro(event) {
+            event.preventDefault();
+            
+            const errorDiv = document.getElementById('errorMessage');
+            const successDiv = document.getElementById('successMessage');
+            errorDiv.style.display = 'none';
+            successDiv.style.display = 'none';
+            
+            const nome = document.getElementById('nome').value;
+            const email = document.getElementById('email').value;
+            const usuario = document.getElementById('usuario').value;
+            const senha = document.getElementById('senha').value;
+            const confirmarSenha = document.getElementById('confirmarSenha').value;
+            
+            // Validações
+            if (senha !== confirmarSenha) {
+                errorDiv.textContent = 'As senhas não coincidem!';
+                errorDiv.style.display = 'block';
+                return;
+            }
+            
+            if (senha.length < 6) {
+                errorDiv.textContent = 'A senha deve ter no mínimo 6 caracteres!';
+                errorDiv.style.display = 'block';
+                return;
+            }
+            
+            try {
+                const response = await fetch('/cadastrar', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        username: usuario,
+                        password: senha,
+                        email: email,
+                        role: 'user'
+                    })
+                });
+                
+                if (response.ok) {
+                    successDiv.textContent = 'Conta criada com sucesso! Redirecionando para login...';
+                    successDiv.style.display = 'block';
+                    document.getElementById('registerForm').reset();
+                    
+                    setTimeout(() => {
+                        window.location.href = '/login';
+                    }, 2000);
+                } else {
+                    const error = await response.text();
+                    errorDiv.textContent = error || 'Erro ao criar conta';
+                    errorDiv.style.display = 'block';
+                }
+            } catch (error) {
+                console.error('Erro:', error);
+                errorDiv.textContent = 'Erro ao conectar com o servidor. Tente novamente.';
+                errorDiv.style.display = 'block';
+            }
+        }
+    </script>
+</body>
+</html>

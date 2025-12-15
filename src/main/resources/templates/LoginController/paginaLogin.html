@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>AquaCode</title>
+    <style>
+        /* body, container, input, button, secao, menuBar */
+
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            background-color: #f0f0e0; /* Fundo claro */
+            color: #040a23; /* Texto escuro */
+            text-align: center;
+            padding-top: 60px; /* Espaço para o menu fixo */
+        }
+
+        .container {
+            padding: 20px;
+            max-width: 800px;
+            margin: auto;
+        }
+
+        input, button, textarea, select {
+            margin: 8px;
+            padding: 10px;
+            width: 90%;
+            max-width: 300px;
+            border: 1px solid #a2b4c6;
+            border-radius: 4px;
+            box-sizing: border-box; /* Garante que padding não estoure a largura */
+        }
+
+        button {
+            background-color: #040a23; /* Azul Marinho */
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        button:hover {
+            background-color: #a2b4c6;
+            color: #040a23;
+        }
+
+        .secao {
+            display: none;
+            padding: 20px 0;
+            border-top: 1px solid #a2b4c6;
+        }
+
+        .ativa {
+            display: block;
+        }
+
+        /* Menu de Navegação */
+        #menuBar {
+            background-color: #040a23;
+            color: white;
+            padding: 15px 0;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 100;
+        }
+
+        #menuBar a {
+            color: white;
+            margin: 0 15px;
+            text-decoration: none;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        #menuBar a:hover {
+            color: #f0f0e0;
+        }
+    </style>
+    <script src="/js/login.js"></script>
+</head>
+<body>
+
+
+<div id="login" class="ativa">
+    <h2>Bem-vindo(a)</h2>
+    <input type="text" id="usuario" placeholder="Usuário"><br>
+    <input type="password" id="senha" placeholder="Senha"><br>
+    <button onclick="login()">Entrar</button>
+    <p id="mensagem" style="color: red;"></p>
+    <p><a href="#" onclick="mostrarCadastro()" style="color: #040a23;">Criar conta</a></p>
+</div>
+
+<div id="cadastro" class="secao">
+    <h2>Crie sua conta</h2>
+    <input type="text" id="novoUsuario" placeholder="Novo usuário"><br>
+    <input type="password" id="novaSenha" placeholder="Nova senha"><br>
+    <button onclick="cadastrar()">Cadastrar</button>
+    <p><a href="#" onclick="mostrarLogin()" style="color: #040a23;">Voltar</a></p>
+</div>
+</body>
+</html>
+
+<div id="menuBar">
+    <a onclick="trocarSecao('intro')">Início</a>
+    <a onclick="trocarSecao('animais')">Animais</a>
+    <a onclick="trocarSecao('mergulho')">Mergulho</a>
+    <a onclick="trocarSecao('sobre')">Sobre</a>
+    <a onclick="deslogar()">Sair</a>
+</div>
