@@ -28,3 +28,8 @@ replay_pid*
 
 # target directory
 /target/
+
+# Arquivos de documentação local
+GUIA_USO.md
+IMPLEMENTACOES_OBRIGATORIAS.md
+MELHORIAS_IMPLEMENTADAS.md
