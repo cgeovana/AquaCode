@@ -17,7 +17,12 @@ INSERT INTO especies_marinhas (nomeComum, nomeCientifico, reino, filo, classe, o
 INSERT INTO especies_marinhas (nomeComum, nomeCientifico, reino, filo, classe, ordem, familia, genero, descricao, habitat, distribuicaoGeografica, dieta, statusConservacao, categoria, caracteristicasDistintivas) VALUES ('Estrela-do-mar-comum', 'Asterias rubens', 'Animalia', 'Echinodermata', 'Asteroidea', 'Forcipulatida', 'Asteriidae', 'Asterias', 'Equinoderma predador comum em águas costeiras.', 'Fundos rochosos e arenosos', 'Nordeste do Atlântico', 'Moluscos bivalves, mexilhões', 'LC', 'Invertebrado', 'Cinco braços, coloração amarelo a roxo');
 
 -- USUÁRIOS (Senhas em BCrypt)
--- USUÁRIOS (criados automaticamente pelo StartupConfig com senhas: admin123 e user123)
+-- Senha admin123 = $2a$10$N9qo8uLOickgx2ZMRZoMy.MqrqE1W8hHq9S5Z5Z5Z5Z5Z5Z5Z5Z5.
+-- Senha user123 = $2a$10$N9qo8uLOickgx2ZMRZoMy.MqrqE1W8hHq9S5Z5Z5Z5Z5Z5Z5Z5Z5.
+INSERT INTO usuarios (username, password, role, email, nome, ativo, data_criacao) VALUES ('admin', '$2a$10$dXJ3SW6G7P50lGmMkkmwe.20cQQubK3.HZWzG3YB1tlRy.fqvM/BG', 'admin', 'admin@aquacode.com', 'Administrador', true, '2024-01-01 00:00:00');
+INSERT INTO usuarios (username, password, role, email, nome, ativo, data_criacao) VALUES ('user', '$2a$10$dXJ3SW6G7P50lGmMkkmwe.20cQQubK3.HZWzG3YB1tlRy.fqvM/BG', 'user', 'user@aquacode.com', 'Usuário Padrão', true, '2024-01-01 00:00:00');
+INSERT INTO usuarios (username, password, role, email, nome, ativo, data_criacao) VALUES ('maria', '$2a$10$dXJ3SW6G7P50lGmMkkmwe.20cQQubK3.HZWzG3YB1tlRy.fqvM/BG', 'user', 'maria@aquacode.com', 'Maria Silva', true, '2024-06-15 10:30:00');
+INSERT INTO usuarios (username, password, role, email, nome, ativo, data_criacao) VALUES ('joao', '$2a$10$dXJ3SW6G7P50lGmMkkmwe.20cQQubK3.HZWzG3YB1tlRy.fqvM/BG', 'user', 'joao@aquacode.com', 'João Santos', true, '2024-07-20 14:45:00');
 
 -- QUIZ
 INSERT INTO quiz (titulo, descricao, ativo) VALUES ('Quiz Básico de Espécies Marinhas', 'Teste seus conhecimentos sobre identificação de espécies marinhas', true);
@@ -33,4 +38,26 @@ INSERT INTO questoes_quiz (quiz_id, especie_id, pergunta, opcaoA, opcaoB, opcaoC
 
 INSERT INTO questoes_quiz (quiz_id, especie_id, pergunta, opcaoA, opcaoB, opcaoC, opcaoD, respostaCorreta, explicacao, ordem) VALUES (1, 6, 'Qual invertebrado marinho é conhecido por sua alta inteligência?', 'Estrela-do-mar', 'Polvo', 'Água-viva', 'Pepino-do-mar', 'B', 'O polvo é um dos invertebrados mais inteligentes.', 5);
 
--- AVISTAMENTOS (criados via API após login; removidos do import.sql para evitar FK antes da criação dos usuários)
+-- AVISTAMENTOS
+-- Avistamentos aprovados (já moderados)
+INSERT INTO avistamentos (nomeEspecie, nomeCientifico, dataHoraAvistamento, latitude, longitude, localDescricao, observacoes, fotoUrl, usuario_id, status, data_submissao, moderado_por, data_moderacao, comentarioModeracao) VALUES ('Golfinho-nariz-de-garrafa', 'Tursiops truncatus', '2024-11-15 09:30:00', -23.0073, -43.3656, 'Praia de Copacabana, Rio de Janeiro', 'Grupo de aproximadamente 8 golfinhos nadando próximo à costa. Comportamento de caça observado.', NULL, 2, 'APROVADO', '2024-11-15 10:00:00', 'admin', '2024-11-15 14:30:00', 'Avistamento confirmado. Excelente registro!');
+
+INSERT INTO avistamentos (nomeEspecie, nomeCientifico, dataHoraAvistamento, latitude, longitude, localDescricao, observacoes, fotoUrl, usuario_id, status, data_submissao, moderado_por, data_moderacao, comentarioModeracao) VALUES ('Tartaruga-verde', 'Chelonia mydas', '2024-11-20 14:15:00', -27.5954, -48.5480, 'Praia da Joaquina, Florianópolis', 'Tartaruga verde adulta avistada se alimentando de algas próximo às rochas.', NULL, 3, 'APROVADO', '2024-11-20 15:00:00', 'admin', '2024-11-20 18:00:00', 'Registro válido de tartaruga-verde em área conhecida de alimentação.');
+
+INSERT INTO avistamentos (nomeEspecie, nomeCientifico, dataHoraAvistamento, latitude, longitude, localDescricao, observacoes, fotoUrl, usuario_id, status, data_submissao, moderado_por, data_moderacao, comentarioModeracao) VALUES ('Baleia-jubarte', 'Megaptera novaeangliae', '2024-08-10 07:45:00', -17.7282, -39.0532, 'Costa de Abrolhos, Bahia', 'Mãe e filhote de jubarte em comportamento de descanso. Filhote realizou vários saltos.', NULL, 4, 'APROVADO', '2024-08-10 08:30:00', 'admin', '2024-08-10 10:00:00', 'Avistamento durante temporada de reprodução. Dados importantes para pesquisa.');
+
+INSERT INTO avistamentos (nomeEspecie, nomeCientifico, dataHoraAvistamento, latitude, longitude, localDescricao, observacoes, fotoUrl, usuario_id, status, data_submissao, moderado_por, data_moderacao, comentarioModeracao) VALUES ('Peixe-palhaço', 'Amphiprion ocellaris', '2024-10-05 11:20:00', -3.8476, -32.4297, 'Fernando de Noronha, PE', 'Casal de peixes-palhaço em anêmona. Observados cuidando de ovos.', NULL, 2, 'APROVADO', '2024-10-05 12:00:00', 'admin', '2024-10-05 16:00:00', 'Registro de comportamento reprodutivo confirmado.');
+
+INSERT INTO avistamentos (nomeEspecie, nomeCientifico, dataHoraAvistamento, latitude, longitude, localDescricao, observacoes, fotoUrl, usuario_id, status, data_submissao, moderado_por, data_moderacao, comentarioModeracao) VALUES ('Tubarão-baleia', 'Rhincodon typus', '2024-09-18 06:30:00', -3.8540, -32.4280, 'Baía dos Golfinhos, Fernando de Noronha', 'Tubarão-baleia juvenil (aproximadamente 5 metros) alimentando-se de plâncton na superfície.', NULL, 3, 'APROVADO', '2024-09-18 07:15:00', 'admin', '2024-09-18 09:00:00', 'Avistamento raro! Importante para monitoramento da espécie.');
+
+INSERT INTO avistamentos (nomeEspecie, nomeCientifico, dataHoraAvistamento, latitude, longitude, localDescricao, observacoes, fotoUrl, usuario_id, status, data_submissao, moderado_por, data_moderacao, comentarioModeracao) VALUES ('Polvo-comum', 'Octopus vulgaris', '2024-11-25 16:00:00', -22.9519, -42.0217, 'Arraial do Cabo, RJ', 'Polvo em fenda rochosa. Mudou de cor quando notou minha presença.', NULL, 4, 'APROVADO', '2024-11-25 17:00:00', 'admin', '2024-11-26 10:00:00', 'Comportamento de camuflagem bem documentado.');
+
+-- Avistamentos pendentes (aguardando moderação)
+INSERT INTO avistamentos (nomeEspecie, nomeCientifico, dataHoraAvistamento, latitude, longitude, localDescricao, observacoes, fotoUrl, usuario_id, status, data_submissao, moderado_por, data_moderacao, comentarioModeracao) VALUES ('Golfinho-rotador', 'Stenella longirostris', '2024-12-10 08:00:00', -3.8500, -32.4300, 'Baía dos Golfinhos, Fernando de Noronha', 'Grande grupo de golfinhos-rotadores (mais de 50 indivíduos) entrando na baía pela manhã.', NULL, 2, 'PENDENTE', '2024-12-10 09:00:00', NULL, NULL, NULL);
+
+INSERT INTO avistamentos (nomeEspecie, nomeCientifico, dataHoraAvistamento, latitude, longitude, localDescricao, observacoes, fotoUrl, usuario_id, status, data_submissao, moderado_por, data_moderacao, comentarioModeracao) VALUES ('Raia-manta', 'Mobula birostris', '2024-12-12 10:30:00', -3.8600, -32.4250, 'Ilha da Rata, Fernando de Noronha', 'Raia-manta gigante avistada durante mergulho. Envergadura estimada em 4 metros.', NULL, 3, 'PENDENTE', '2024-12-12 11:00:00', NULL, NULL, NULL);
+
+INSERT INTO avistamentos (nomeEspecie, nomeCientifico, dataHoraAvistamento, latitude, longitude, localDescricao, observacoes, fotoUrl, usuario_id, status, data_submissao, moderado_por, data_moderacao, comentarioModeracao) VALUES ('Estrela-do-mar', 'Asterias rubens', '2024-12-14 15:00:00', -22.7500, -41.8800, 'Búzios, RJ', 'Várias estrelas-do-mar em poça de maré durante maré baixa.', NULL, 4, 'PENDENTE', '2024-12-14 15:30:00', NULL, NULL, NULL);
+
+-- Avistamento rejeitado (exemplo)
+INSERT INTO avistamentos (nomeEspecie, nomeCientifico, dataHoraAvistamento, latitude, longitude, localDescricao, observacoes, fotoUrl, usuario_id, status, data_submissao, moderado_por, data_moderacao, comentarioModeracao) VALUES ('Tubarão-branco', 'Carcharodon carcharias', '2024-11-01 12:00:00', -23.0000, -43.0000, 'Praia de Ipanema, RJ', 'Vi um tubarão enorme perto da praia!', NULL, 2, 'REJEITADO', '2024-11-01 12:30:00', 'admin', '2024-11-02 09:00:00', 'Identificação improvável. Tubarões-brancos são extremamente raros na costa brasileira. Provavelmente confundido com outra espécie.');

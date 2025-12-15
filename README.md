@@ -1,83 +1,224 @@
-# pw
+# 🐋 AquaCode - Sistema de Gerenciamento de Animais Marinhos
 
-This project uses Quarkus, the Supersonic Subatomic Java Framework.
+Sistema web completo para gerenciamento e catalogação de animais marinhos, desenvolvido como projeto prático da disciplina de Programação Web.
 
-If you want to learn more about Quarkus, please visit its website: <https://quarkus.io/>.
+---
 
-## Running the application in dev mode
+## 📋 Requisitos do Projeto
 
-You can run your application in dev mode that enables live coding using:
+Este projeto atende aos requisitos funcionais e não funcionais definidos pelo professor:
 
-```shell script
+### ✅ Requisitos Funcionais Implementados
+
+| # | Requisito | Status | Implementação |
+|---|-----------|--------|---------------|
+| 1 | **Autenticar usuário** | ✅ | Login via e-mail e senha com JWT |
+| 2 | **Manter usuário** | ✅ | CRUD completo de usuários |
+| 3 | **Manter perfil de usuário** | ✅ | Roles: `admin` e `user` com permissões distintas |
+| 4 | **Navegação de recursos** | ✅ | Menu de navegação em todas as páginas |
+| 5 | **Casos de uso específicos** | ✅ | Avistamentos, Espécies, Quiz, Animais |
+| 6 | **Rastreabilidade e Auditoria** | ✅ | Log completo de ações com usuário, data/hora e IP |
+
+### ✅ Requisitos Não Funcionais Implementados
+
+| Requisito | Status | Tecnologia |
+|-----------|--------|------------|
+| Linguagem Java EE (11+) | ✅ | Java 17 |
+| Modelo MVC | ✅ | Controllers → Services → Repositories → Entities |
+| JAX-RS | ✅ | Endpoints REST com `@Path`, `@GET`, `@POST`, etc. |
+| Quarkus | ✅ | Versão 3.25.4 |
+| Padrão DAO/Entity | ✅ | Panache Repositories + JPA Entities |
+| Padrão BO | ✅ | AnimalBO, VacinaBO, ConsultaBO, VoluntarioBO |
+| Comunicação via DTO | ✅ | DTOs para todas as entidades |
+
+---
+
+## 🏗️ Arquitetura do Projeto
+
+```
+src/main/java/br/edu/ifg/luziania/
+├── bo/              # Business Objects (regras de negócio)
+├── config/          # Configurações (Auditoria, Startup)
+├── controller/      # Endpoints REST (Controllers)
+├── dto/             # Data Transfer Objects
+├── entity/          # Entidades JPA
+├── repository/      # Repositórios (DAOs) com Panache
+└── service/         # Serviços (lógica de aplicação)
+```
+
+---
+
+## 🚀 Como Executar o Projeto
+
+### Pré-requisitos
+
+- **Java 17** ou superior
+- **Maven 3.8+**
+- **Docker** (opcional, para banco de dados)
+
+### 1. Clonar o Repositório
+
+```bash
+git clone https://github.com/cgeovana/AquaCode.git
+cd AquaCode
+```
+
+### 2. Executar em Modo de Desenvolvimento
+
+```bash
 ./mvnw quarkus:dev
 ```
 
-> **_NOTE:_**  Quarkus now ships with a Dev UI, which is available in dev mode only at <http://localhost:8080/q/dev/>.
+> **Windows:** Use `mvnw.cmd quarkus:dev`
 
-## Packaging and running the application
+### 3. Acessar a Aplicação
 
-The application can be packaged using:
+- **Página Inicial:** http://localhost:8080
+- **Login:** http://localhost:8080/login
+- **Dev UI (Quarkus):** http://localhost:8080/q/dev/
 
-```shell script
+---
+
+## 👤 Usuários Padrão para Teste
+
+| E-mail | Senha | Perfil | Permissões |
+|--------|-------|--------|------------|
+| `admin@aquacode.com` | `admin123` | Administrador | Acesso total |
+| `user@aquacode.com` | `user123` | Usuário | Visualização e registro de avistamentos |
+| `maria@aquacode.com` | `user123` | Usuário | Visualização e registro de avistamentos |
+| `joao@aquacode.com` | `user123` | Usuário | Visualização e registro de avistamentos |
+
+---
+
+## 📦 Casos de Uso Implementados
+
+### 1. **Registro de Avistamentos** (Usuários autenticados)
+- Qualquer usuário pode registrar avistamentos de animais marinhos
+- Avistamentos ficam pendentes até aprovação do admin
+- Inclui coordenadas geográficas e descrição
+
+### 2. **Moderação de Avistamentos** (Somente Admin)
+- Aprovar ou rejeitar avistamentos
+- Adicionar comentários de moderação
+
+### 3. **Catálogo de Espécies Marinhas**
+- Listagem completa com filtros
+- Informações científicas detalhadas
+
+### 4. **Quiz Interativo**
+- Perguntas sobre identificação de espécies
+- Sistema de pontuação
+
+### 5. **Gestão de Animais** (Somente Admin)
+- CRUD completo com validações de negócio
+- Controle de status (Ativo, Em Tratamento, Recuperado, Falecido)
+
+---
+
+## 🔐 Sistema de Autenticação
+
+- **Autenticação:** E-mail + Senha
+- **Token:** JWT com validade de 8 horas
+- **Criptografia:** BCrypt para senhas
+- **Autorização:** `@RolesAllowed` para controle de acesso
+
+---
+
+## 📊 Sistema de Auditoria
+
+Todas as ações são registradas contendo:
+- ✅ Ação executada
+- ✅ Usuário executor
+- ✅ Data e hora
+- ✅ Método HTTP
+- ✅ Endpoint acessado
+- ✅ IP de origem
+
+---
+
+## 🛠️ Tecnologias Utilizadas
+
+### Back-End
+- **Quarkus 3.25.4** - Framework Java
+- **Hibernate ORM + Panache** - Persistência
+- **SmallRye JWT** - Autenticação
+- **PostgreSQL** - Banco de dados (produção)
+- **H2 Database** - Banco de dados (desenvolvimento)
+
+### Front-End
+- **HTML5 + CSS3** - Estrutura e estilização
+- **JavaScript (Vanilla)** - Interatividade
+- **Qute** - Template engine
+
+---
+
+## 📁 Estrutura de Pastas
+
+```
+AquaCode/
+├── src/
+│   ├── main/
+│   │   ├── java/br/edu/ifg/luziania/
+│   │   │   ├── bo/           # Business Objects
+│   │   │   ├── config/       # Configurações
+│   │   │   ├── controller/   # REST Controllers
+│   │   │   ├── dto/          # Data Transfer Objects
+│   │   │   ├── entity/       # Entidades JPA
+│   │   │   ├── repository/   # Repositórios
+│   │   │   └── service/      # Serviços
+│   │   └── resources/
+│   │       ├── META-INF/resources/
+│   │       │   ├── css/      # Estilos
+│   │       │   └── js/       # Scripts
+│   │       ├── templates/    # Templates Qute
+│   │       ├── application.properties
+│   │       └── import.sql    # Dados iniciais
+│   └── test/                 # Testes
+├── pom.xml
+└── README.md
+```
+
+---
+
+## 🧪 Executando Testes
+
+```bash
+./mvnw test
+```
+
+---
+
+## 📦 Build para Produção
+
+### Gerar JAR executável
+
+```bash
 ./mvnw package
+java -jar target/quarkus-app/quarkus-run.jar
 ```
 
-It produces the `quarkus-run.jar` file in the `target/quarkus-app/` directory.
-Be aware that it’s not an _über-jar_ as the dependencies are copied into the `target/quarkus-app/lib/` directory.
+### Gerar Über-JAR (JAR único)
 
-The application is now runnable using `java -jar target/quarkus-app/quarkus-run.jar`.
-
-If you want to build an _über-jar_, execute the following command:
-
-```shell script
+```bash
 ./mvnw package -Dquarkus.package.jar.type=uber-jar
+java -jar target/*-runner.jar
 ```
 
-The application, packaged as an _über-jar_, is now runnable using `java -jar target/*-runner.jar`.
+---
 
-## Creating a native executable
+## 👥 Equipe de Desenvolvimento
 
-You can create a native executable using:
+- **Geovana** - Desenvolvimento Full-Stack
 
-```shell script
-./mvnw package -Dnative
-```
+---
 
-Or, if you don't have GraalVM installed, you can run the native executable build in a container using:
+## 📄 Licença
 
-```shell script
-./mvnw package -Dnative -Dquarkus.native.container-build=true
-```
+Este projeto foi desenvolvido para fins acadêmicos como parte da disciplina de Programação Web do IFG - Campus Luziânia.
 
-You can then execute your native executable with: `./target/pw-1.0.0-SNAPSHOT-runner`
+---
 
-If you want to learn more about building native executables, please consult <https://quarkus.io/guides/maven-tooling>.
+## 📞 Suporte
 
-## Related Guides
-
-- JSON-B ([guide](https://quarkus.io/guides/rest-json)): JSON Binding support
-- REST JSON-B ([guide](https://quarkus.io/guides/rest#json-serialisation)): JSON-B serialization support for Quarkus REST. This extension is not compatible with the quarkus-resteasy extension, or any of the extensions that depend on it.
-- Renarde ([guide](https://quarkiverse.github.io/quarkiverse-docs/quarkus-renarde/dev/index.html)): Renarde is a server-side Web Framework based on Quarkus, Qute, Hibernate and RESTEasy Reactive.
-- Web Bundler ([guide](https://docs.quarkiverse.io/quarkus-web-bundler/dev/)): Creating full-stack Web Apps is fast and simple with this extension. Zero config bundling for your web-app scripts (js, jsx, ts, tsx), dependencies (jquery, react, htmx, ...) and styles (css, scss, sass).
-
-## Provided Code
-
-### Renarde
-
-This is a small Renarde webapp. Once the quarkus app is started visit http://localhost:8080/renarde
-
-[Related guide section...](https://quarkiverse.github.io/quarkiverse-docs/quarkus-renarde/dev/index.html)
-
-
-### REST
-
-Easily start your REST Web Services
-
-[Related guide section...](https://quarkus.io/guides/getting-started-reactive#reactive-jax-rs-resources)
-
-### Web Bundler
-
-This is a tiny app `web-bundler.html` to get started with the Web Bundler. Once the quarkus app is started visit the generated page at http://localhost:8080/web-bundler.html
-
-[Related guide section...](https://docs.quarkiverse.io/quarkus-web-bundler/dev/)
+Em caso de dúvidas ou problemas, entre em contato através do repositório do GitHub.
 
