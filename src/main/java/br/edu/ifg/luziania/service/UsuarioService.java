@@ -1,15 +1,15 @@
 package br.edu.ifg.luziania.service;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
 import br.edu.ifg.luziania.dto.UsuarioDTO;
 import br.edu.ifg.luziania.entity.Usuario;
 import br.edu.ifg.luziania.repository.UsuarioRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
 
 @ApplicationScoped
 public class UsuarioService {

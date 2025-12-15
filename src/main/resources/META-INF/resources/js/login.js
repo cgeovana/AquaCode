@@ -1,3 +1,13 @@
+// Verificar se já está logado ao carregar a página de login
+(function checkAlreadyLogged() {
+    var token = localStorage.getItem('token') || localStorage.getItem('jwt_token');
+    var username = localStorage.getItem('username');
+    if (token && username) {
+        // Usuário já está logado, redirecionar para home
+        window.location.href = '/';
+    }
+})();
+
 function login(){
 
     let domain = "http://localhost:8080"

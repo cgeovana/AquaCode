@@ -1,5 +1,7 @@
 package br.edu.ifg.luziania.controller;
 
+import java.util.List;
+
 import br.edu.ifg.luziania.config.AuditLog;
 import br.edu.ifg.luziania.dto.UsuarioDTO;
 import br.edu.ifg.luziania.entity.Usuario;
@@ -7,11 +9,17 @@ import br.edu.ifg.luziania.service.UsuarioService;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
-import jakarta.ws.rs.*;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.DELETE;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.PUT;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
-
-import java.util.List;
 
 @Path("/api/usuarios")
 @RolesAllowed("admin")

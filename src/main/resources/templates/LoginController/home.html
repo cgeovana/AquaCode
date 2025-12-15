@@ -286,8 +286,13 @@
                 <li><a href="/avistamentos">📍 Avistamentos</a></li>
                 <li><a href="/quiz">🎯 Quiz</a></li>
                 <li><a href="#sobre">Sobre</a></li>
+                <li id="adminLink" style="display:none;"><a href="/avistamentos/admin">⚙️ Admin</a></li>
             </ul>
-            <a href="/login" class="btn-login">Login</a>
+            <a href="/login" class="btn-login" id="btnLoginNav">Login</a>
+            <div id="userMenuNav" style="display:none; align-items:center;">
+                <span id="welcomeUser" style="color:#2c3e50; font-weight:600; margin-right:15px;"></span>
+                <a href="#" onclick="logout()" class="btn-login" style="background:#e74c3c;">Sair</a>
+            </div>
         </div>
     </nav>
 
@@ -296,7 +301,8 @@
         <h1>🌊 Descubra o Oceano</h1>
         <p>Explore a vida marinha e contribua para a conservação dos oceanos</p>
         <div class="hero-buttons">
-            <a href="/login" class="btn-primary">Fazer Login</a>
+            <a href="/login" class="btn-primary" id="btnLoginHero">Fazer Login</a>
+            <a href="/especies/listar" class="btn-primary" id="btnExplorar" style="display:none;">Explorar Catálogo</a>
             <a href="#animais" class="btn-secondary">Ver Animais</a>
         </div>
     </section>
@@ -431,5 +437,47 @@
         <p>&copy; 2025 AquaCode - Todos os direitos reservados</p>
         <p style="margin-top: 10px; opacity: 0.8;">Protegendo os oceanos, um animal de cada vez 🌊</p>
     </footer>
+
+    <script>
+        // Verificar autenticação ao carregar a página
+        document.addEventListener('DOMContentLoaded', function() {
+            checkUserAuth();
+        });
+
+        function checkUserAuth() {
+            var token = localStorage.getItem('token') || localStorage.getItem('jwt_token');
+            var username = localStorage.getItem('username');
+            var role = localStorage.getItem('role');
+
+            if (token && username) {
+                // Usuário logado - esconder botões de login
+                var btnLoginNav = document.getElementById('btnLoginNav');
+                var btnLoginHero = document.getElementById('btnLoginHero');
+                var userMenuNav = document.getElementById('userMenuNav');
+                var welcomeUser = document.getElementById('welcomeUser');
+                var btnExplorar = document.getElementById('btnExplorar');
+                var adminLink = document.getElementById('adminLink');
+
+                if (btnLoginNav) btnLoginNav.style.display = 'none';
+                if (btnLoginHero) btnLoginHero.style.display = 'none';
+                if (btnExplorar) btnExplorar.style.display = 'inline-block';
+                if (userMenuNav) userMenuNav.style.display = 'flex';
+                if (welcomeUser) welcomeUser.textContent = 'Olá, ' + username + '!';
+                
+                // Mostrar link admin se for admin
+                if (role === 'admin' && adminLink) {
+                    adminLink.style.display = 'block';
+                }
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('jwt_token');
+            localStorage.removeItem('username');
+            localStorage.removeItem('role');
+            window.location.href = '/';
+        }
+    </script>
 </body>
 </html>
