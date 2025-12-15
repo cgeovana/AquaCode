@@ -348,15 +348,38 @@
             const senha = document.getElementById('senha').value;
             const confirmarSenha = document.getElementById('confirmarSenha').value;
             
-            // Validações
-            if (senha !== confirmarSenha) {
-                errorDiv.textContent = 'As senhas não coincidem!';
-                errorDiv.style.display = 'block';
-                return;
+            // Validações de regras de negócio
+            const erros = [];
+
+            // RN1: Nome deve ter pelo menos 3 caracteres
+            if (nome.trim().length < 3) {
+                erros.push('Nome deve ter pelo menos 3 caracteres');
             }
-            
+
+            // RN2: E-mail deve ter formato válido
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                erros.push('E-mail deve ter formato válido');
+            }
+
+            // RN3: Usuário deve ter pelo menos 3 caracteres
+            if (usuario.trim().length < 3) {
+                erros.push('Usuário deve ter pelo menos 3 caracteres');
+            }
+
+            // RN4: Senha deve ter pelo menos 6 caracteres
             if (senha.length < 6) {
-                errorDiv.textContent = 'A senha deve ter no mínimo 6 caracteres!';
+                erros.push('Senha deve ter no mínimo 6 caracteres');
+            }
+
+            // RN5: Senhas devem coincidir
+            if (senha !== confirmarSenha) {
+                erros.push('As senhas não coincidem');
+            }
+
+            // Exibir erros se houver
+            if (erros.length > 0) {
+                errorDiv.innerHTML = '❌ Erros de validação:<br>• ' + erros.join('<br>• ');
                 errorDiv.style.display = 'block';
                 return;
             }
@@ -371,12 +394,13 @@
                         username: usuario,
                         password: senha,
                         email: email,
+                        nome: nome,
                         role: 'user'
                     })
                 });
                 
                 if (response.ok) {
-                    successDiv.textContent = 'Conta criada com sucesso! Redirecionando para login...';
+                    successDiv.textContent = '✅ Conta criada com sucesso! Redirecionando para login...';
                     successDiv.style.display = 'block';
                     document.getElementById('registerForm').reset();
                     

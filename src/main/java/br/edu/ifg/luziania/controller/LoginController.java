@@ -7,7 +7,11 @@ import io.quarkus.qute.CheckedTemplate;
 import io.quarkus.qute.TemplateInstance;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
-import jakarta.ws.rs.*;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
@@ -54,7 +58,7 @@ public class LoginController {
         return authService.authenticate(dto)
                 .map(authResponse -> Response.ok(authResponse).build())
                 .orElse(Response.status(Response.Status.UNAUTHORIZED)
-                        .entity(new AuthResponseDTO("Usuário ou senha inválidos"))
+                        .entity(new AuthResponseDTO("E-mail ou senha inválidos"))
                         .build());
     }
 

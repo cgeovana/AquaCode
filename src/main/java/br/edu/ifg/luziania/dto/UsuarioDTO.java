@@ -1,5 +1,6 @@
 package br.edu.ifg.luziania.dto;
 
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
@@ -16,7 +17,10 @@ public class UsuarioDTO {
     @NotBlank(message = "Role é obrigatória")
     private String role;
 
+    @NotBlank(message = "E-mail é obrigatório")
+    @Email(message = "E-mail deve ter formato válido")
     private String email;
+
     private String nome;
 
     // Getters e Setters

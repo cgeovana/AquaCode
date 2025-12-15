@@ -597,26 +597,27 @@
             <!-- Formulário de Cadastro/Edição admin-only -->
             <div class="form-container"> 
                 <h3 style="text-align: center; color: #2c3e50; margin-bottom: 20px;">Cadastro de Animal</h3>
+                <div id="formErrors" style="background: #ffe0e0; color: #c00; padding: 12px; border-radius: 8px; margin-bottom: 20px; display: none;"></div>
                 <form id="formAnimal" class="admin-form">
                     <input type="hidden" id="animalId">
                     
                     <div class="form-group">
-                        <label for="nome">Nome do Animal *</label>
-                        <input type="text" id="nome" required placeholder="Ex: Nemo">
+                        <label for="nome">Nome do Animal * <small style="color: #666; font-weight: normal;">(mín. 2 caracteres)</small></label>
+                        <input type="text" id="nome" required minlength="2" placeholder="Ex: Nemo">
                     </div>
 
                     <div class="form-group">
-                        <label for="especie">Espécie *</label>
-                        <input type="text" id="especie" required placeholder="Ex: Peixe Palhaço">
+                        <label for="especie">Espécie * <small style="color: #666; font-weight: normal;">(mín. 3 caracteres)</small></label>
+                        <input type="text" id="especie" required minlength="3" placeholder="Ex: Peixe Palhaço">
                     </div>
 
                     <div class="form-group">
-                        <label for="idade">Idade (anos) *</label>
+                        <label for="idade">Idade (anos) * <small style="color: #666; font-weight: normal;">(0-200)</small></label>
                         <input type="number" id="idade" required min="0" max="200" placeholder="Ex: 3">
                     </div>
 
                     <div class="form-group">
-                        <label for="habitat">Habitat *</label>
+                        <label for="habitat">Habitat * <small style="color: #666; font-weight: normal;">(obrigatório)</small></label>
                         <input type="text" id="habitat" required placeholder="Ex: Recife de coral">
                     </div>
 

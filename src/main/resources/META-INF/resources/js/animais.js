@@ -160,6 +160,63 @@ async function carregarAnimais() {
     }
 }
 
+// ======================================
+// VALIDAÇÕES DO ANIMALBO NO FRONT-END
+// ======================================
+
+/**
+ * Validar regras de negócio do Animal (espelho do AnimalBO.java)
+ * @param {Object} formData - Dados do formulário
+ * @returns {Array} Lista de erros de validação
+ */
+function validarAnimal(formData) {
+    const erros = [];
+
+    // RN1: Nome do animal deve ter pelo menos 2 caracteres
+    if (formData.nome && formData.nome.trim().length < 2) {
+        erros.push('Nome do animal deve ter pelo menos 2 caracteres');
+    }
+
+    // RN2: Espécie deve ter pelo menos 3 caracteres
+    if (formData.especie && formData.especie.trim().length < 3) {
+        erros.push('Espécie deve ter pelo menos 3 caracteres');
+    }
+
+    // RN3: Idade não pode ser negativa e não pode ser maior que 200 anos
+    if (formData.idade !== null && formData.idade !== undefined) {
+        if (formData.idade < 0 || formData.idade > 200) {
+            erros.push('Idade deve estar entre 0 e 200 anos');
+        }
+    }
+
+    // RN4: Status deve ser válido
+    if (formData.status) {
+        const statusValidos = ['ATIVO', 'EM TRATAMENTO', 'RECUPERADO', 'FALECIDO'];
+        if (!statusValidos.includes(formData.status.toUpperCase())) {
+            erros.push('Status deve ser: ATIVO, EM TRATAMENTO, RECUPERADO ou FALECIDO');
+        }
+    }
+
+    // RN5: Habitat deve ser preenchido
+    if (!formData.habitat || formData.habitat.trim() === '') {
+        erros.push('Habitat é obrigatório');
+    }
+
+    return erros;
+}
+
+/**
+ * Exibir erros de validação em um alerta formatado
+ * @param {Array} erros - Lista de erros
+ */
+function exibirErrosValidacao(erros) {
+    if (erros.length > 0) {
+        alert('❌ Erros de validação:\n\n• ' + erros.join('\n• '));
+        return true;
+    }
+    return false;
+}
+
 // Criar novo animal
 async function criarAnimal(event) {
     event.preventDefault();
@@ -177,6 +234,12 @@ async function criarAnimal(event) {
         descricao: document.getElementById('descricao').value,
         status: document.getElementById('status').value
     };
+
+    // Validar regras de negócio do AnimalBO no front-end
+    const errosValidacao = validarAnimal(formData);
+    if (exibirErrosValidacao(errosValidacao)) {
+        return;
+    }
     
     try {
         const result = await authenticatedFetch('/animais/api', {
@@ -185,12 +248,22 @@ async function criarAnimal(event) {
         });
         
         if (result) {
-            alert('Animal cadastrado com sucesso!');
+            alert('✅ Animal cadastrado com sucesso!');
             document.getElementById('formAnimal').reset();
+            // Fechar formulário após cadastro
+            const formContainer = document.querySelector('.form-container');
+            if (formContainer) {
+                formContainer.classList.remove('show');
+                const fabButton = document.getElementById('fabButton');
+                if (fabButton) {
+                    fabButton.textContent = '+';
+                    fabButton.title = 'Adicionar Animal';
+                }
+            }
             carregarAnimais();
         }
     } catch (error) {
-        alert('Erro ao cadastrar animal: ' + error.message);
+        alert('❌ Erro ao cadastrar animal: ' + error.message);
     }
 }
 
@@ -239,6 +312,12 @@ async function atualizarAnimal(event, id) {
         descricao: document.getElementById('descricao').value,
         status: document.getElementById('status').value
     };
+
+    // Validar regras de negócio do AnimalBO no front-end
+    const errosValidacao = validarAnimal(formData);
+    if (exibirErrosValidacao(errosValidacao)) {
+        return;
+    }
     
     try {
         const result = await authenticatedFetch(`/animais/api/${id}`, {
@@ -247,12 +326,22 @@ async function atualizarAnimal(event, id) {
         });
         
         if (result) {
-            alert('Animal atualizado com sucesso!');
+            alert('✅ Animal atualizado com sucesso!');
             cancelarEdicao();
+            // Fechar formulário após atualização
+            const formContainer = document.querySelector('.form-container');
+            if (formContainer) {
+                formContainer.classList.remove('show');
+                const fabButton = document.getElementById('fabButton');
+                if (fabButton) {
+                    fabButton.textContent = '+';
+                    fabButton.title = 'Adicionar Animal';
+                }
+            }
             carregarAnimais();
         }
     } catch (error) {
-        alert('Erro ao atualizar animal: ' + error.message);
+        alert('❌ Erro ao atualizar animal: ' + error.message);
     }
 }
 

@@ -21,7 +21,7 @@ function login(){
             "Content-Type": "application/json",
         },
         body: JSON.stringify({
-            usuario: document.getElementById("usuario").value,
+            email: document.getElementById("email").value,
             senha: document.getElementById("senha").value
         }),
     }).then(response => {
@@ -57,8 +57,18 @@ async function fazerLogin(event) {
     if (errorDiv) errorDiv.style.display = 'none';
     if (successDiv) successDiv.style.display = 'none';
     
-    const usuario = document.getElementById('usuario').value;
+    const email = document.getElementById('email').value;
     const senha = document.getElementById('senha').value;
+
+    // Validação de e-mail no front-end
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+        if (errorDiv) {
+            errorDiv.textContent = 'Por favor, digite um e-mail válido.';
+            errorDiv.style.display = 'block';
+        }
+        return;
+    }
     
     try {
         const response = await fetch('/logar', {
@@ -67,7 +77,7 @@ async function fazerLogin(event) {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                usuario: usuario,
+                email: email,
                 senha: senha
             })
         });
@@ -92,7 +102,7 @@ async function fazerLogin(event) {
         } else {
             const errorData = await response.json();
             if (errorDiv) {
-                errorDiv.textContent = errorData.message || 'Usuário ou senha inválidos!';
+                errorDiv.textContent = errorData.message || 'E-mail ou senha inválidos!';
                 errorDiv.style.display = 'block';
             }
         }

@@ -28,24 +28,31 @@ public class UsuarioService {
             erros.add("Usuário já existe");
         }
 
-        // RN2: Role deve ser válida
+        // RN2: Email deve ser único
+        if (dto.getEmail() != null && usuarioRepository.existsByEmail(dto.getEmail())) {
+            erros.add("E-mail já cadastrado");
+        }
+
+        // RN3: Role deve ser válida
         if (!validarRole(dto.getRole())) {
             erros.add("Role deve ser 'admin' ou 'user'");
         }
 
-        // RN3: Username deve ter no mínimo 3 caracteres
+        // RN4: Username deve ter no mínimo 3 caracteres
         if (dto.getUsername() == null || dto.getUsername().trim().length() < 3) {
             erros.add("Username deve ter no mínimo 3 caracteres");
         }
 
-        // RN4: Senha deve ter no mínimo 6 caracteres
+        // RN5: Senha deve ter no mínimo 6 caracteres
         if (dto.getPassword() == null || dto.getPassword().length() < 6) {
             erros.add("Senha deve ter no mínimo 6 caracteres");
         }
 
-        // RN5: Email deve ser válido
-        if (dto.getEmail() != null && !dto.getEmail().matches("^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$")) {
-            erros.add("Email inválido");
+        // RN6: Email deve ser válido e obrigatório
+        if (dto.getEmail() == null || dto.getEmail().trim().isEmpty()) {
+            erros.add("E-mail é obrigatório");
+        } else if (!dto.getEmail().matches("^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$")) {
+            erros.add("E-mail inválido");
         }
 
         return erros;

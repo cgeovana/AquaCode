@@ -1,5 +1,10 @@
 package br.edu.ifg.luziania.service;
 
+import java.time.Duration;
+import java.util.HashSet;
+import java.util.Optional;
+import java.util.Set;
+
 import br.edu.ifg.luziania.dto.AuthResponseDTO;
 import br.edu.ifg.luziania.dto.LoginDTO;
 import br.edu.ifg.luziania.entity.Usuario;
@@ -10,11 +15,6 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 
-import java.time.Duration;
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
-
 @ApplicationScoped
 public class AuthService {
 
@@ -22,7 +22,7 @@ public class AuthService {
     UsuarioRepository usuarioRepository;
 
     public Optional<AuthResponseDTO> authenticate(LoginDTO loginDTO) {
-        Optional<Usuario> usuarioOpt = usuarioRepository.findActiveByUsername(loginDTO.getUsuario());
+        Optional<Usuario> usuarioOpt = usuarioRepository.findActiveByEmail(loginDTO.getEmail());
         
         if (usuarioOpt.isPresent()) {
             Usuario usuario = usuarioOpt.get();
@@ -67,12 +67,15 @@ public class AuthService {
     }
 
     @Transactional
-    public Usuario register(String username, String password, String role) {
+    public Usuario register(String username, String password, String role, String email) {
         if (usuarioRepository.existsByUsername(username)) {
             throw new IllegalArgumentException("Usuário já existe");
         }
+        if (usuarioRepository.existsByEmail(email)) {
+            throw new IllegalArgumentException("E-mail já cadastrado");
+        }
 
-        Usuario usuario = new Usuario(username, password, role);
+        Usuario usuario = new Usuario(username, password, role, email);
         usuarioRepository.persist(usuario);
         return usuario;
     }
@@ -80,10 +83,10 @@ public class AuthService {
     @Transactional
     public void createDefaultUsers() {
         if (!usuarioRepository.existsByUsername("admin")) {
-            register("admin", "admin123", "admin");
+            register("admin", "admin123", "admin", "admin@aquacode.com");
         }
         if (!usuarioRepository.existsByUsername("user")) {
-            register("user", "user123", "user");
+            register("user", "user123", "user", "user@aquacode.com");
         }
     }
 }

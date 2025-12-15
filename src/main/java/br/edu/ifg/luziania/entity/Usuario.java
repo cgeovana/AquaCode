@@ -37,7 +37,7 @@ public class Usuario {
     @Column(nullable = false)
     private String role = "user"; // "user" ou "admin"
 
-    @Column(length = 100)
+    @Column(unique = true, nullable = false, length = 100)
     private String email;
 
     @Column(length = 100)
@@ -56,6 +56,13 @@ public class Usuario {
         this.username = username;
         this.password = BcryptUtil.bcryptHash(password);
         this.role = role;
+    }
+
+    public Usuario(String username, String password, String role, String email) {
+        this.username = username;
+        this.password = BcryptUtil.bcryptHash(password);
+        this.role = role;
+        this.email = email;
     }
 
     // Getters e Setters
