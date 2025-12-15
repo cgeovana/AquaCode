@@ -83,10 +83,10 @@ cd AquaCode
 
 | E-mail | Senha | Perfil | Permissões |
 |--------|-------|--------|------------|
-| `admin@aquacode.com` | `admin123` | Administrador | Acesso total |
-| `user@aquacode.com` | `user123` | Usuário | Visualização e registro de avistamentos |
-| `maria@aquacode.com` | `user123` | Usuário | Visualização e registro de avistamentos |
-| `joao@aquacode.com` | `user123` | Usuário | Visualização e registro de avistamentos |
+| `admin@aquacode.com` | `123456` | Administrador | Acesso total |
+| `user@aquacode.com` | `123456` | Usuário | Visualização e registro de avistamentos |
+| `maria@aquacode.com` | `123456` | Usuário | Visualização e registro de avistamentos |
+| `joao@aquacode.com` | `123456` | Usuário | Visualização e registro de avistamentos |
 
 ---
 
@@ -208,7 +208,7 @@ java -jar target/*-runner.jar
 
 ## 👥 Equipe de Desenvolvimento
 
-- **Geovana** - Desenvolvimento Full-Stack
+- **Geovana** - Aluna
 
 ---
 
