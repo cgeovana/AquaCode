@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AquaCode - Gerenciamento de Animais Marinhos</title>
+    <link rel="stylesheet" href="/css/Css.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin: 0;
+        }
+
+        #userInfo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .user-badge {
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+
+        .user-badge.admin {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        .user-badge.user {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+
+        .btn-logout {
+            padding: 10px 25px;
+            background: #ff4757;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .btn-logout:hover {
+            background: #ff3838;
+            transform: scale(1.05);
+        }
+
+        /* Main Content */
+        .main-content {
+            padding: 40px;
+        }
+
+        .section-title {
+            font-size: 2em;
+            color: #2c3e50;
+            margin-bottom: 30px;
+            text-align: center;
+            position: relative;
+        }
+
+        .section-title::after {
+            content: '';
+            display: block;
+            width: 100px;
+            height: 4px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 10px auto 0;
+            border-radius: 2px;
+        }
+
+        /* Formulário */
+        .form-container {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 0;
+            border-radius: 15px;
+            max-height: 0;
+            overflow: hidden;
+            opacity: 0;
+            transition: all 0.5s ease;
+            margin-bottom: 0;
+        }
+
+        .form-container.show {
+            max-height: 2000px;
+            opacity: 1;
+            margin-bottom: 40px;
+            padding: 30px;
+        }
+
+        .admin-form {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 8px;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: all 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .form-actions {
+            grid-column: 1 / -1;
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .btn-submit {
+            padding: 15px 40px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 30px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-submit:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+
+        .btn-submit:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .btn-cancel {
+            padding: 15px 40px;
+            background: #95a5a6;
+            color: white;
+            border: none;
+            border-radius: 30px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-cancel:hover {
+            background: #7f8c8d;
+        }
+
+        /* Cards de Animais */
+        .animals-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
+            margin-top: 30px;
+        }
+
+        .animal-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: all 0.3s;
+        }
+
+        .animal-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .animal-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .animal-header h3 {
+            margin: 0;
+            font-size: 1.5em;
+        }
+
+        .status-badge {
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: bold;
+            background: rgba(255,255,255,0.3);
+        }
+
+        .status-ativo {
+            background: #2ecc71 !important;
+        }
+
+        .status-em-tratamento {
+            background: #f39c12 !important;
+        }
+
+        .status-recuperado {
+            background: #3498db !important;
+        }
+
+        .status-falecido {
+            background: #e74c3c !important;
+        }
+
+        .animal-body {
+            padding: 20px;
+        }
+
+        .animal-body p {
+            margin: 10px 0;
+            color: #555;
+            line-height: 1.6;
+        }
+
+        .animal-body strong {
+            color: #2c3e50;
+        }
+
+        .animal-actions {
+            padding: 15px 20px;
+            background: #f8f9fa;
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn-view,
+        .btn-edit,
+        .btn-delete {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.9em;
+        }
+
+        .btn-view {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+        }
+
+        .btn-edit {
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            color: white;
+        }
+
+        .btn-delete {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+            color: white;
+        }
+
+        .btn-view:hover,
+        .btn-edit:hover,
+        .btn-delete:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .admin-only {
+            display: none;
+        }
+
+        .no-data {
+            text-align: center;
+            padding: 60px 20px;
+            color: #95a5a6;
+            font-size: 1.3em;
+        }
+
+        .admin-notice {
+            background: linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            text-align: center;
+            font-weight: bold;
+            color: #2d3436;
+        }
+
+        .user-notice {
+            background: linear-gradient(135deg, #74b9ff 0%, #a29bfe 100%);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            text-align: center;
+            font-weight: bold;
+            color: white;
+        }
+
+        input[type="hidden"] {
+            display: none;
+        }
+
+        /* Modal */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 20px;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 20px;
+            max-width: 800px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 25px 30px;
+            border-radius: 20px 20px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h2 {
+            margin: 0;
+            font-size: 2em;
+        }
+
+        .modal-close {
+            font-size: 2.5em;
+            cursor: pointer;
+            line-height: 1;
+            font-weight: bold;
+            transition: transform 0.3s;
+        }
+
+        .modal-close:hover {
+            transform: scale(1.2);
+        }
+
+        .modal-body {
+            padding: 30px;
+        }
+
+        .detail-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+
+        .detail-section h3 {
+            margin-top: 0;
+            color: #2c3e50;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .detail-section p {
+            margin: 10px 0;
+            line-height: 1.8;
+        }
+
+        .comments-section {
+            margin-top: 30px;
+        }
+
+        .comments-section h3 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+
+        .comment-form {
+            margin-bottom: 25px;
+            padding: 20px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            border-radius: 10px;
+        }
+
+        .comment-form textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 1em;
+            resize: vertical;
+            margin-bottom: 15px;
+        }
+
+        .comment-form textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .comments-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .comment-item {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            transition: all 0.3s;
+        }
+
+        .comment-item:hover {
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            transform: translateX(5px);
+        }
+
+        .comment-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .comment-header strong {
+            color: #667eea;
+            font-size: 1.1em;
+        }
+
+        .comment-date {
+            color: #999;
+            font-size: 0.85em;
+        }
+
+        .comment-text {
+            color: #333;
+            line-height: 1.6;
+            margin-bottom: 10px;
+        }
+
+        .btn-delete-comment {
+            padding: 5px 15px;
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            border-radius: 15px;
+            font-size: 0.85em;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-delete-comment:hover {
+            background: #ee5a6f;
+        }
+
+        /* Botão Flutuante de Adicionar */
+        .fab-button {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            font-size: 28px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            transition: all 0.3s ease;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .fab-button:hover {
+            transform: scale(1.1) rotate(90deg);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+
+        .fab-button:active {
+            transform: scale(0.95);
+        }
+    </style>
+</head>
+<body>
+    <!-- Cabeçalho de Navegação -->
+    <nav style="background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); box-shadow: 0 2px 20px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 1000; margin-bottom: 20px;">
+        <div style="max-width: 1200px; margin: 0 auto; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center;">
+            <div style="font-size: 1.8em; font-weight: bold; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; cursor: pointer;" onclick="window.location.href='/'">🐋 AquaCode</div>
+            <ul style="display: flex; gap: 30px; list-style: none; align-items: center;">
+                <li><a href="/" style="text-decoration: none; color: #2c3e50; font-weight: 600;">Início</a></li>
+                <li><a href="/animais/lista" style="text-decoration: none; color: #2c3e50; font-weight: 600;">Animais</a></li>
+                <li><a href="/mergulho/lista" style="text-decoration: none; color: #2c3e50; font-weight: 600;">Mergulhos</a></li>
+                <li><span style="color: #667eea; font-weight: 600;"class="admin-only" >Área Admin</span></li>
+            </ul>
+            <div style="display: flex; align-items: center; gap: 15px;">
+                <span id="navWelcome" style="color: #2c3e50; font-weight: 600;"></span>
+                <button onclick="logout()" style="background: #e74c3c; color: white; padding: 8px 20px; border: none; border-radius: 20px; cursor: pointer; font-weight: bold;">Sair</button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="header">
+            <h1>🐋 AquaCode</h1>
+            <div id="userInfo"></div>
+        </div>
+
+        <div class="main-content">
+            <h2 class="section-title">Gerenciamento de Animais Marinhos</h2>
+
+            <!-- Aviso para Administrador -->
+            <div id="adminNotice" class="admin-notice admin-only">
+                ⚠️ Você está no modo ADMINISTRADOR. Você pode criar, editar e deletar animais.
+            </div>
+
+            <!-- Aviso para Usuário -->
+            <div id="userNotice" class="user-notice" style="display: none;">
+                ℹ️ Você está no modo VISUALIZAÇÃO. Apenas administradores podem modificar dados.
+            </div>
+
+            <!-- Formulário de Cadastro/Edição admin-only -->
+            <div class="form-container"> 
+                <h3 style="text-align: center; color: #2c3e50; margin-bottom: 20px;">Cadastro de Animal</h3>
+                <form id="formAnimal" class="admin-form">
+                    <input type="hidden" id="animalId">
+                    
+                    <div class="form-group">
+                        <label for="nome">Nome do Animal *</label>
+                        <input type="text" id="nome" required placeholder="Ex: Nemo">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="especie">Espécie *</label>
+                        <input type="text" id="especie" required placeholder="Ex: Peixe Palhaço">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="idade">Idade (anos) *</label>
+                        <input type="number" id="idade" required min="0" max="200" placeholder="Ex: 3">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="habitat">Habitat *</label>
+                        <input type="text" id="habitat" required placeholder="Ex: Recife de coral">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="status">Status *</label>
+                        <select id="status" required>
+                            <option value="ATIVO">Ativo</option>
+                            <option value="EM TRATAMENTO">Em Tratamento</option>
+                            <option value="RECUPERADO">Recuperado</option>
+                            <option value="FALECIDO">Falecido</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group" style="grid-column: 1 / -1;">
+                        <label for="descricao">Descrição</label>
+                        <textarea id="descricao" placeholder="Informações adicionais sobre o animal..."></textarea>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn-submit">Cadastrar Animal</button>
+                        <button type="button" class="btn-cancel admin-only" onclick="cancelarEdicao()">Cancelar</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Lista de Animais -->
+            <h3 style="text-align: center; color: #2c3e50; margin-top: 50px; margin-bottom: 20px;">Animais Cadastrados</h3>
+            <div id="animaisContainer" class="animals-grid"></div>
+        </div>
+    </div>
+
+    <!-- Botão Flutuante para Adicionar Animal -->
+    <button id="fabButton" class="fab-button admin-only" onclick="toggleFormulario()" title="Adicionar Animal">
+        +
+    </button>
+
+    <script src="/js/animais.js"></script>
+    <script>
+        // Função para mostrar/esconder formulário
+        function toggleFormulario() {
+            const formContainer = document.querySelector('.form-container');
+            formContainer.classList.toggle('show');
+            
+            const fabButton = document.getElementById('fabButton');
+            if (formContainer.classList.contains('show')) {
+                fabButton.textContent = '×';
+                fabButton.title = 'Fechar Formulário';
+                // Scroll suave até o formulário
+                formContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            } else {
+                fabButton.textContent = '+';
+                fabButton.title = 'Adicionar Animal';
+                cancelarEdicao(); // Limpar o formulário ao fechar
+            }
+        }
+
+        // Atualizar cabeçalho de navegação
+        window.addEventListener('DOMContentLoaded', () => {
+            const username = localStorage.getItem('username') || 'Usuário';
+            const role = localStorage.getItem('role') || 'user';
+            const navWelcome = document.getElementById('navWelcome');
+            if (navWelcome) {
+                if (role === 'admin') {
+                    navWelcome.textContent = 'Administrador: ' + username;
+                } else {
+                    navWelcome.textContent = 'Olá, ' + username;
+                }
+            }
+        });
+    </script>
+</body>
+</html>

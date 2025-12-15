@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AquaCode - Roteiros de Mergulho</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        /* Cabeçalho fixo */
+        .header-nav {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.8em;
+            font-weight: bold;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            cursor: pointer;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+            list-style: none;
+            align-items: center;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #2c3e50;
+            font-weight: 600;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: #667eea;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .welcome-msg {
+            color: #2c3e50;
+            font-weight: 600;
+        }
+
+        .btn-admin {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 20px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: transform 0.3s;
+        }
+
+        .btn-admin:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn-logout {
+            background: #e74c3c;
+            color: white;
+            padding: 8px 20px;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+
+        .btn-logout:hover {
+            background: #c0392b;
+        }
+
+        /* Container principal */
+        .container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .page-title {
+            text-align: center;
+            color: white;
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .page-subtitle {
+            text-align: center;
+            color: white;
+            font-size: 1.2em;
+            margin-bottom: 40px;
+            opacity: 0.9;
+        }
+
+        /* Grid de mergulhos */
+        .diving-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 30px;
+        }
+
+        .diving-card {
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            transition: transform 0.3s;
+        }
+
+        .diving-card:hover {
+            transform: translateY(-10px);
+        }
+
+        .diving-image {
+            width: 100%;
+            height: 250px;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 5em;
+        }
+
+        .diving-content {
+            padding: 25px;
+        }
+
+        .diving-title {
+            font-size: 1.8em;
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+
+        .diving-info {
+            color: #666;
+            margin-bottom: 10px;
+            font-size: 1em;
+            line-height: 1.6;
+        }
+
+        .diving-info strong {
+            color: #2c3e50;
+        }
+
+        .price {
+            font-size: 1.5em;
+            color: #27ae60;
+            font-weight: bold;
+            margin: 15px 0;
+        }
+
+        .features {
+            margin: 15px 0;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+            color: #666;
+        }
+
+        .feature-item::before {
+            content: '✓';
+            color: #27ae60;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        .btn-reserve {
+            width: 100%;
+            background: linear-gradient(135deg, #27ae60 0%, #229954 100%);
+            color: white;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            font-weight: bold;
+            font-size: 1.1em;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: transform 0.3s;
+        }
+
+        .btn-reserve:hover {
+            transform: translateY(-2px);
+        }
+
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+            
+            .diving-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Cabeçalho -->
+    <nav class="header-nav">
+        <div class="nav-container">
+            <div class="logo" onclick="window.location.href='/'">🐋 AquaCode</div>
+            <ul class="nav-links">
+                <li><a href="/">Início</a></li>
+                <li><a href="/animais/lista">Animais</a></li>
+                <li><a href="/mergulho/lista">Mergulhos</a></li>
+            </ul>
+            <div class="user-info">
+                <span class="welcome-msg" id="welcomeMsg"></span>
+                <a href="/animais" class="btn-admin" id="btnAdmin" style="display: none;">Área Admin</a>
+                <button onclick="logout()" class="btn-logout">Sair</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Conteúdo -->
+    <div class="container">
+        <h1 class="page-title">🤿 Roteiros de Mergulho</h1>
+        <p class="page-subtitle">Explore os melhores destinos para mergulho no Brasil e no mundo</p>
+        
+        <div class="diving-grid">
+            <div class="diving-card">
+                <div class="diving-image">🏝️</div>
+                <div class="diving-content">
+                    <h3 class="diving-title">Fernando de Noronha</h3>
+                    <p class="diving-info"><strong>📍 Local:</strong> Pernambuco, Brasil</p>
+                    <p class="diving-info"><strong>⏱️ Duração:</strong> 5 dias / 4 noites</p>
+                    <p class="diving-info"><strong>🏊 Mergulhos:</strong> 8 mergulhos inclusos</p>
+                    <div class="price">R$ 2.800,00</div>
+                    <div class="features">
+                        <div class="feature-item">Águas cristalinas com visibilidade de até 50m</div>
+                        <div class="feature-item">Golfinhos rotadores e tartarugas marinhas</div>
+                        <div class="feature-item">Naufrágios históricos</div>
+                        <div class="feature-item">Equipamento completo incluso</div>
+                    </div>
+                    <button class="btn-reserve" onclick="reserve('Fernando de Noronha')">Reservar Agora</button>
+                </div>
+            </div>
+
+            <div class="diving-card">
+                <div class="diving-image">🪸</div>
+                <div class="diving-content">
+                    <h3 class="diving-title">Grande Barreira de Coral</h3>
+                    <p class="diving-info"><strong>📍 Local:</strong> Queensland, Austrália</p>
+                    <p class="diving-info"><strong>⏱️ Duração:</strong> 7 dias / 6 noites</p>
+                    <p class="diving-info"><strong>🏊 Mergulhos:</strong> 12 mergulhos inclusos</p>
+                    <div class="price">R$ 8.500,00</div>
+                    <div class="features">
+                        <div class="feature-item">Maior recife de coral do mundo</div>
+                        <div class="feature-item">Mais de 1.500 espécies de peixes</div>
+                        <div class="feature-item">Mergulho noturno incluso</div>
+                        <div class="feature-item">Certificado PADI opcional</div>
+                    </div>
+                    <button class="btn-reserve" onclick="reserve('Grande Barreira')">Reservar Agora</button>
+                </div>
+            </div>
+
+            <div class="diving-card">
+                <div class="diving-image">🏖️</div>
+                <div class="diving-content">
+                    <h3 class="diving-title">Maldivas</h3>
+                    <p class="diving-info"><strong>📍 Local:</strong> Oceano Índico</p>
+                    <p class="diving-info"><strong>⏱️ Duração:</strong> 10 dias / 9 noites</p>
+                    <p class="diving-info"><strong>🏊 Mergulhos:</strong> 15 mergulhos inclusos</p>
+                    <div class="price">R$ 12.000,00</div>
+                    <div class="features">
+                        <div class="feature-item">Mantas e tubarões-baleia</div>
+                        <div class="feature-item">Resort 5 estrelas all-inclusive</div>
+                        <div class="feature-item">Atóis paradisíacos</div>
+                        <div class="feature-item">Transfer de barco e hidroavião</div>
+                    </div>
+                    <button class="btn-reserve" onclick="reserve('Maldivas')">Reservar Agora</button>
+                </div>
+            </div>
+
+            <div class="diving-card">
+                <div class="diving-image">🌊</div>
+                <div class="diving-content">
+                    <h3 class="diving-title">Abrolhos</h3>
+                    <p class="diving-info"><strong>📍 Local:</strong> Bahia, Brasil</p>
+                    <p class="diving-info"><strong>⏱️ Duração:</strong> 4 dias / 3 noites</p>
+                    <p class="diving-info"><strong>🏊 Mergulhos:</strong> 6 mergulhos inclusos</p>
+                    <div class="price">R$ 1.900,00</div>
+                    <div class="features">
+                        <div class="feature-item">Santuário das baleias jubarte</div>
+                        <div class="feature-item">Corais únicos do Atlântico Sul</div>
+                        <div class="feature-item">Vida marinha abundante</div>
+                        <div class="feature-item">Saída de Caravelas-BA</div>
+                    </div>
+                    <button class="btn-reserve" onclick="reserve('Abrolhos')">Reservar Agora</button>
+                </div>
+            </div>
+
+            <div class="diving-card">
+                <div class="diving-image">🐙</div>
+                <div class="diving-content">
+                    <h3 class="diving-title">Galápagos</h3>
+                    <p class="diving-info"><strong>📍 Local:</strong> Equador</p>
+                    <p class="diving-info"><strong>⏱️ Duração:</strong> 8 dias / 7 noites</p>
+                    <p class="diving-info"><strong>🏊 Mergulhos:</strong> 14 mergulhos inclusos</p>
+                    <div class="price">R$ 15.000,00</div>
+                    <div class="features">
+                        <div class="feature-item">Tubarões-martelo em cardumes</div>
+                        <div class="feature-item">Fauna endêmica única</div>
+                        <div class="feature-item">Live aboard de luxo</div>
+                        <div class="feature-item">Darwin e Wolf Islands</div>
+                    </div>
+                    <button class="btn-reserve" onclick="reserve('Galápagos')">Reservar Agora</button>
+                </div>
+            </div>
+
+            <div class="diving-card">
+                <div class="diving-image">🦈</div>
+                <div class="diving-content">
+                    <h3 class="diving-title">Raja Ampat</h3>
+                    <p class="diving-info"><strong>📍 Local:</strong> Indonésia</p>
+                    <p class="diving-info"><strong>⏱️ Duração:</strong> 12 dias / 11 noites</p>
+                    <p class="diving-info"><strong>🏊 Mergulhos:</strong> 20 mergulhos inclusos</p>
+                    <div class="price">R$ 18.500,00</div>
+                    <div class="features">
+                        <div class="feature-item">Maior biodiversidade marinha do mundo</div>
+                        <div class="feature-item">Mais de 1.500 espécies de peixes</div>
+                        <div class="feature-item">Águas cristalinas e correntes</div>
+                        <div class="feature-item">Experiência premium</div>
+                    </div>
+                    <button class="btn-reserve" onclick="reserve('Raja Ampat')">Reservar Agora</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Verificar autenticação
+        function checkAuth() {
+            const token = localStorage.getItem('token');
+            const username = localStorage.getItem('username');
+            const role = localStorage.getItem('role');
+            
+            if (!token) {
+                window.location.href = '/login';
+                return false;
+            }
+            
+            // Atualizar cabeçalho
+            const welcomeMsg = document.getElementById('welcomeMsg');
+            const btnAdmin = document.getElementById('btnAdmin');
+            
+            if (role === 'admin') {
+                welcomeMsg.textContent = `Administrador: ${username}`;
+                btnAdmin.style.display = 'inline-block';
+            } else {
+                welcomeMsg.textContent = `Olá, ${username}`;
+                btnAdmin.style.display = 'none';
+            }
+            
+            return true;
+        }
+
+        function logout() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('username');
+            localStorage.removeItem('role');
+            window.location.href = '/';
+        }
+
+        function reserve(destination) {
+            alert(`Reserva para ${destination} iniciada!\n\nEm breve você receberá mais informações por email.`);
+        }
+
+        // Inicializar
+        checkAuth();
+    </script>
+</body>
+</html>
