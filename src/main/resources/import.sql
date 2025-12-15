@@ -17,12 +17,12 @@ INSERT INTO especies_marinhas (nomeComum, nomeCientifico, reino, filo, classe, o
 INSERT INTO especies_marinhas (nomeComum, nomeCientifico, reino, filo, classe, ordem, familia, genero, descricao, habitat, distribuicaoGeografica, dieta, statusConservacao, categoria, caracteristicasDistintivas) VALUES ('Estrela-do-mar-comum', 'Asterias rubens', 'Animalia', 'Echinodermata', 'Asteroidea', 'Forcipulatida', 'Asteriidae', 'Asterias', 'Equinoderma predador comum em águas costeiras.', 'Fundos rochosos e arenosos', 'Nordeste do Atlântico', 'Moluscos bivalves, mexilhões', 'LC', 'Invertebrado', 'Cinco braços, coloração amarelo a roxo');
 
 -- USUÁRIOS (Senhas em BCrypt)
--- Senha admin123 = $2a$10$N9qo8uLOickgx2ZMRZoMy.MqrqE1W8hHq9S5Z5Z5Z5Z5Z5Z5Z5Z5.
--- Senha user123 = $2a$10$N9qo8uLOickgx2ZMRZoMy.MqrqE1W8hHq9S5Z5Z5Z5Z5Z5Z5Z5Z5.
-INSERT INTO usuarios (username, password, role, email, nome, ativo, data_criacao) VALUES ('admin', '$2a$10$dXJ3SW6G7P50lGmMkkmwe.20cQQubK3.HZWzG3YB1tlRy.fqvM/BG', 'admin', 'admin@aquacode.com', 'Administrador', true, '2024-01-01 00:00:00');
-INSERT INTO usuarios (username, password, role, email, nome, ativo, data_criacao) VALUES ('user', '$2a$10$dXJ3SW6G7P50lGmMkkmwe.20cQQubK3.HZWzG3YB1tlRy.fqvM/BG', 'user', 'user@aquacode.com', 'Usuário Padrão', true, '2024-01-01 00:00:00');
-INSERT INTO usuarios (username, password, role, email, nome, ativo, data_criacao) VALUES ('maria', '$2a$10$dXJ3SW6G7P50lGmMkkmwe.20cQQubK3.HZWzG3YB1tlRy.fqvM/BG', 'user', 'maria@aquacode.com', 'Maria Silva', true, '2024-06-15 10:30:00');
-INSERT INTO usuarios (username, password, role, email, nome, ativo, data_criacao) VALUES ('joao', '$2a$10$dXJ3SW6G7P50lGmMkkmwe.20cQQubK3.HZWzG3YB1tlRy.fqvM/BG', 'user', 'joao@aquacode.com', 'João Santos', true, '2024-07-20 14:45:00');
+-- Senha 123456.
+
+INSERT INTO usuarios (username, password, role, email, nome, ativo, data_criacao) VALUES ('admin', '$2a$10$p/fxlSfI5FsBmEz5H7IEIuANQO0fJUGbCvKxzlMe8gUle33PlMWCK', 'admin', 'admin@aquacode.com', 'Administrador', true, '2024-01-01 00:00:00');
+INSERT INTO usuarios (username, password, role, email, nome, ativo, data_criacao) VALUES ('user', '$2a$10$p/fxlSfI5FsBmEz5H7IEIuANQO0fJUGbCvKxzlMe8gUle33PlMWCK', 'user', 'user@aquacode.com', 'Usuário Padrão', true, '2024-01-01 00:00:00');
+INSERT INTO usuarios (username, password, role, email, nome, ativo, data_criacao) VALUES ('maria', '$2a$10$p/fxlSfI5FsBmEz5H7IEIuANQO0fJUGbCvKxzlMe8gUle33PlMWCK', 'user', 'maria@aquacode.com', 'Maria Silva', true, '2024-06-15 10:30:00');
+INSERT INTO usuarios (username, password, role, email, nome, ativo, data_criacao) VALUES ('joao', '$2a$10$p/fxlSfI5FsBmEz5H7IEIuANQO0fJUGbCvKxzlMe8gUle33PlMWCK', 'user', 'joao@aquacode.com', 'João Santos', true, '2024-07-20 14:45:00');
 
 -- QUIZ
 INSERT INTO quiz (titulo, descricao, ativo) VALUES ('Quiz Básico de Espécies Marinhas', 'Teste seus conhecimentos sobre identificação de espécies marinhas', true);
