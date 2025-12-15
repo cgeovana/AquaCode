@@ -208,7 +208,7 @@ java -jar target/*-runner.jar
 
 ## 👥 Equipe de Desenvolvimento
 
-- **Geovana** - Desenvolvimento Full-Stack
+- **Geovana** - Aluna
 
 ---
 
