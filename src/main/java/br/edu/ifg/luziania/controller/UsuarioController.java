@@ -107,4 +107,30 @@ public class UsuarioController {
                         .entity("Usuário não encontrado")
                         .build());
     }
+
+    @PUT
+    @Path("/{id}/status")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response alterarStatus(@PathParam("id") Long id, @QueryParam("ativo") Boolean ativo) {
+        if (ativo == null) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity("Parâmetro 'ativo' é obrigatório")
+                    .build();
+        }
+
+        return usuarioService.buscarPorId(id)
+                .map(usuario -> {
+                    // Não permitir desativar o admin principal
+                    if (usuario.getUsername().equals("admin") && !ativo) {
+                        return Response.status(Response.Status.BAD_REQUEST)
+                                .entity("Não é permitido desativar o usuário admin principal")
+                                .build();
+                    }
+                    Usuario usuarioAtualizado = usuarioService.alterarStatus(id, ativo);
+                    return Response.ok(usuarioAtualizado).build();
+                })
+                .orElse(Response.status(Response.Status.NOT_FOUND)
+                        .entity("Usuário não encontrado")
+                        .build());
+    }
 }

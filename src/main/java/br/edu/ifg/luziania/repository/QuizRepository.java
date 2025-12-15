@@ -13,7 +13,7 @@ public class QuizRepository implements PanacheRepository<Quiz> {
         return list("ativo = true ORDER BY titulo");
     }
 
-    public List<Quiz> findAll() {
+    public List<Quiz> listarTodos() {
         return listAll();
     }
 }

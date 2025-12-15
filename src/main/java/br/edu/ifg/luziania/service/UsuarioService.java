@@ -175,4 +175,14 @@ public class UsuarioService {
     public List<Usuario> listarTodos() {
         return usuarioRepository.listAll();
     }
+
+    /**
+     * Alterar status do usuário (ativar/banir)
+     */
+    @Transactional
+    public Usuario alterarStatus(Long id, Boolean ativo) {
+        Usuario usuario = usuarioRepository.findById(id);
+        usuario.setAtivo(ativo);
+        return usuario;
+    }
 }

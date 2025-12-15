@@ -16,10 +16,21 @@ public class EspecieViewController {
     @Location("EspecieController/listarEspecies.html")
     Template listarEspecies;
 
+    @Inject
+    @Location("EspecieController/adminEspecies.html")
+    Template adminEspecies;
+
     @GET
     @Path("/listar")
     @Produces(MediaType.TEXT_HTML)
     public TemplateInstance listar() {
         return listarEspecies.instance();
+    }
+
+    @GET
+    @Path("/admin")
+    @Produces(MediaType.TEXT_HTML)
+    public TemplateInstance admin() {
+        return adminEspecies.instance();
     }
 }

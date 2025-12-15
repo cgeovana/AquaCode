@@ -1,0 +1,1162 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Administração de Espécies - AquaCode</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        /* Cabeçalho fixo */
+        .header-nav {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.8em;
+            font-weight: bold;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            cursor: pointer;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+            list-style: none;
+            align-items: center;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #2c3e50;
+            font-weight: 600;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: #667eea;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .welcome-msg {
+            color: #2c3e50;
+            font-weight: 600;
+        }
+
+        .btn-logout {
+            background: #e74c3c;
+            color: white;
+            padding: 8px 20px;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+
+        .btn-logout:hover {
+            background: #c0392b;
+        }
+
+        /* Container principal */
+        .container {
+            max-width: 1400px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .page-title {
+            color: white;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .page-subtitle {
+            color: white;
+            font-size: 1.2em;
+            margin-bottom: 30px;
+            opacity: 0.9;
+        }
+
+        /* Botões */
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(39, 174, 96, 0.4);
+        }
+
+        .btn-secondary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-edit {
+            background: #3498db;
+            color: white;
+            padding: 8px 15px;
+            font-size: 0.9em;
+        }
+
+        .btn-delete {
+            background: #e74c3c;
+            color: white;
+            padding: 8px 15px;
+            font-size: 0.9em;
+        }
+
+        .btn-cancel {
+            background: #95a5a6;
+            color: white;
+        }
+
+        /* Grid de espécies */
+        .species-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .species-card {
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            transition: transform 0.3s;
+        }
+
+        .species-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .species-card.add-new {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            border: 3px dashed #667eea;
+            background: rgba(255,255,255,0.8);
+            min-height: 300px;
+        }
+
+        .species-card.add-new:hover {
+            background: white;
+        }
+
+        .species-card.add-new .icon {
+            font-size: 3em;
+            margin-bottom: 15px;
+        }
+
+        .species-card.add-new span {
+            color: #667eea;
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+
+        .species-image {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4em;
+            color: white;
+        }
+
+        .species-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .species-content {
+            padding: 20px;
+        }
+
+        .species-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 10px;
+        }
+
+        .species-name {
+            font-size: 1.3em;
+            color: #2c3e50;
+            font-weight: bold;
+        }
+
+        .species-scientific {
+            font-style: italic;
+            color: #7f8c8d;
+            font-size: 0.95em;
+            margin-bottom: 10px;
+        }
+
+        .species-category {
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.8em;
+            font-weight: bold;
+            background: #e8f4fd;
+            color: #3498db;
+        }
+
+        .species-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin: 15px 0;
+            font-size: 0.9em;
+        }
+
+        .species-info-item {
+            display: flex;
+            gap: 5px;
+        }
+
+        .species-info-item .label {
+            color: #7f8c8d;
+        }
+
+        .species-info-item .value {
+            color: #2c3e50;
+            font-weight: 500;
+        }
+
+        .conservation-status {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 10px;
+            font-size: 0.85em;
+            font-weight: bold;
+        }
+
+        .status-LC { background: #d4edda; color: #155724; }
+        .status-NT { background: #fff3cd; color: #856404; }
+        .status-VU { background: #ffeeba; color: #856404; }
+        .status-EN { background: #f8d7da; color: #721c24; }
+        .status-CR { background: #dc3545; color: white; }
+        .status-EW { background: #6c757d; color: white; }
+        .status-EX { background: #343a40; color: white; }
+
+        .species-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+        }
+
+        /* Filtros */
+        .filters {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+            margin-bottom: 30px;
+            display: flex;
+            gap: 15px;
+            align-items: end;
+            flex-wrap: wrap;
+        }
+
+        .filter-group {
+            flex: 1;
+            min-width: 180px;
+        }
+
+        .filter-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #2c3e50;
+            font-weight: 600;
+            font-size: 0.9em;
+        }
+
+        .filter-group select,
+        .filter-group input {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1em;
+        }
+
+        .btn-filter {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 10px 25px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            height: 42px;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 800px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #eee;
+        }
+
+        .modal-title {
+            font-size: 1.5em;
+            color: #2c3e50;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5em;
+            cursor: pointer;
+            color: #7f8c8d;
+        }
+
+        .modal-close:hover {
+            color: #e74c3c;
+        }
+
+        /* Formulário */
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group.full-width {
+            grid-column: span 2;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #2c3e50;
+            font-weight: 600;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1em;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 15px;
+            justify-content: flex-end;
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 2px solid #eee;
+        }
+
+        /* Upload de imagem */
+        .image-upload {
+            border: 3px dashed #e0e0e0;
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .image-upload:hover {
+            border-color: #667eea;
+            background: #f8f9ff;
+        }
+
+        .image-upload .icon {
+            font-size: 3em;
+            margin-bottom: 10px;
+        }
+
+        .image-upload input {
+            display: none;
+        }
+
+        .image-preview {
+            margin-top: 15px;
+        }
+
+        .image-preview img {
+            max-width: 200px;
+            max-height: 150px;
+            border-radius: 10px;
+        }
+
+        /* Toast notification */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            padding: 15px 25px;
+            border-radius: 10px;
+            color: white;
+            font-weight: bold;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.3s;
+            z-index: 3000;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .toast.success { background: #27ae60; }
+        .toast.error { background: #e74c3c; }
+        .toast.warning { background: #f39c12; }
+
+        /* Loading */
+        .loading {
+            text-align: center;
+            padding: 60px;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #e0e0e0;
+            border-top-color: #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Confirmação de exclusão */
+        .confirm-modal {
+            max-width: 400px;
+            text-align: center;
+        }
+
+        .confirm-modal .icon {
+            font-size: 4em;
+            margin-bottom: 20px;
+        }
+
+        .confirm-modal p {
+            margin-bottom: 25px;
+            color: #666;
+        }
+
+        /* Estatísticas */
+        .stats-bar {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2.2em;
+            font-weight: bold;
+            margin-bottom: 5px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .stat-label {
+            color: #7f8c8d;
+            font-size: 0.9em;
+            text-transform: uppercase;
+        }
+
+        /* Responsivo */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+
+            .page-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .form-group.full-width {
+                grid-column: span 1;
+            }
+
+            .species-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Cabeçalho -->
+    <nav class="header-nav">
+        <div class="nav-container">
+            <div class="logo" onclick="window.location.href='/'">🐋 AquaCode</div>
+            <ul class="nav-links">
+                <li><a href="/">Início</a></li>
+                <li><a href="/especies/admin">Catálogo</a></li>
+                <li><a href="/avistamentos/admin">Avistamentos</a></li>
+                <li><a href="/quiz/admin">Quiz</a></li>
+                <li><a href="/usuarios/admin">Usuários</a></li>
+            </ul>
+            <div class="user-info">
+                <span class="welcome-msg" id="welcomeMsg"></span>
+                <button onclick="logout()" class="btn-logout">Sair</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Conteúdo Principal -->
+    <div class="container">
+        <div class="page-header">
+            <div>
+                <h1 class="page-title">🐠 Gerenciar Espécies Marinhas</h1>
+                <p class="page-subtitle">Cadastre, edite e gerencie o catálogo de espécies</p>
+            </div>
+            <button class="btn btn-primary" onclick="abrirModalNova()">
+                ➕ Nova Espécie
+            </button>
+        </div>
+
+        <!-- Estatísticas -->
+        <div class="stats-bar">
+            <div class="stat-card">
+                <div class="stat-number" id="totalEspecies">0</div>
+                <div class="stat-label">Total de Espécies</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="totalCategorias">0</div>
+                <div class="stat-label">Categorias</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="especiesAmeacadas">0</div>
+                <div class="stat-label">Ameaçadas</div>
+            </div>
+        </div>
+
+        <!-- Filtros -->
+        <div class="filters">
+            <div class="filter-group">
+                <label>Buscar</label>
+                <input type="text" id="filtroNome" placeholder="Nome comum ou científico...">
+            </div>
+            <div class="filter-group">
+                <label>Categoria</label>
+                <select id="filtroCategoria">
+                    <option value="">Todas</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>Status de Conservação</label>
+                <select id="filtroStatus">
+                    <option value="">Todos</option>
+                    <option value="LC">LC - Pouco Preocupante</option>
+                    <option value="NT">NT - Quase Ameaçado</option>
+                    <option value="VU">VU - Vulnerável</option>
+                    <option value="EN">EN - Em Perigo</option>
+                    <option value="CR">CR - Criticamente Ameaçado</option>
+                    <option value="EW">EW - Extinto na Natureza</option>
+                    <option value="EX">EX - Extinto</option>
+                </select>
+            </div>
+            <button class="btn-filter" onclick="aplicarFiltros()">🔍 Filtrar</button>
+        </div>
+
+        <!-- Grid de Espécies -->
+        <div class="species-grid" id="speciesGrid">
+            <div class="loading">
+                <div class="spinner"></div>
+                <p>Carregando espécies...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Cadastro/Edição -->
+    <div class="modal" id="modalEspecie">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="modalTitulo">Nova Espécie</h2>
+                <button class="modal-close" onclick="fecharModal()">&times;</button>
+            </div>
+
+            <form id="formEspecie" onsubmit="salvarEspecie(event)">
+                <input type="hidden" id="especieId">
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Nome Comum *</label>
+                        <input type="text" id="nomeComum" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Nome Científico *</label>
+                        <input type="text" id="nomeCientifico" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Categoria</label>
+                        <select id="categoria">
+                            <option value="">Selecione...</option>
+                            <option value="Peixe">Peixe</option>
+                            <option value="Mamífero">Mamífero</option>
+                            <option value="Invertebrado">Invertebrado</option>
+                            <option value="Réptil">Réptil</option>
+                            <option value="Alga">Alga</option>
+                            <option value="Coral">Coral</option>
+                            <option value="Crustáceo">Crustáceo</option>
+                            <option value="Molusco">Molusco</option>
+                            <option value="Ave Marinha">Ave Marinha</option>
+                            <option value="Outro">Outro</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Status de Conservação</label>
+                        <select id="statusConservacao">
+                            <option value="">Selecione...</option>
+                            <option value="LC">LC - Pouco Preocupante</option>
+                            <option value="NT">NT - Quase Ameaçado</option>
+                            <option value="VU">VU - Vulnerável</option>
+                            <option value="EN">EN - Em Perigo</option>
+                            <option value="CR">CR - Criticamente Ameaçado</option>
+                            <option value="EW">EW - Extinto na Natureza</option>
+                            <option value="EX">EX - Extinto</option>
+                        </select>
+                    </div>
+
+                    <!-- Taxonomia -->
+                    <div class="form-group">
+                        <label>Reino</label>
+                        <input type="text" id="reino" value="Animalia">
+                    </div>
+                    <div class="form-group">
+                        <label>Filo</label>
+                        <input type="text" id="filo">
+                    </div>
+                    <div class="form-group">
+                        <label>Classe</label>
+                        <input type="text" id="classe">
+                    </div>
+                    <div class="form-group">
+                        <label>Ordem</label>
+                        <input type="text" id="ordem">
+                    </div>
+                    <div class="form-group">
+                        <label>Família</label>
+                        <input type="text" id="familia">
+                    </div>
+                    <div class="form-group">
+                        <label>Gênero</label>
+                        <input type="text" id="genero">
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label>Descrição</label>
+                        <textarea id="descricao" rows="3"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Habitat</label>
+                        <input type="text" id="habitat" placeholder="Ex: Recifes de coral, águas tropicais">
+                    </div>
+                    <div class="form-group">
+                        <label>Dieta</label>
+                        <input type="text" id="dieta" placeholder="Ex: Carnívoro, plâncton">
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label>Distribuição Geográfica</label>
+                        <input type="text" id="distribuicaoGeografica" placeholder="Ex: Oceano Atlântico Sul">
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label>Características Distintivas</label>
+                        <textarea id="caracteristicasDistintivas" rows="2" placeholder="Características que ajudam na identificação..."></textarea>
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label>URL da Imagem</label>
+                        <input type="url" id="imagemUrl" placeholder="https://exemplo.com/imagem.jpg">
+                        <div class="image-preview" id="imagePreview"></div>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" class="btn btn-cancel" onclick="fecharModal()">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">💾 Salvar Espécie</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal de Confirmação de Exclusão -->
+    <div class="modal" id="modalConfirm">
+        <div class="modal-content confirm-modal">
+            <div class="icon">⚠️</div>
+            <h2>Confirmar Exclusão</h2>
+            <p id="confirmMessage">Tem certeza que deseja excluir esta espécie?</p>
+            <div class="form-actions" style="justify-content: center;">
+                <button class="btn btn-cancel" onclick="fecharModalConfirm()">Cancelar</button>
+                <button class="btn btn-delete" onclick="confirmarExclusao()">🗑️ Excluir</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div class="toast" id="toast"></div>
+
+    <script>
+        let especies = [];
+        let categorias = [];
+        let especieParaExcluir = null;
+
+        // Verificar autenticação (apenas admin)
+        function checkAuth() {
+            var token = localStorage.getItem('token');
+            var username = localStorage.getItem('username');
+            var role = localStorage.getItem('role');
+            
+            if (!token || role !== 'admin') {
+                alert('Acesso negado. Apenas administradores podem acessar esta página.');
+                window.location.href = '/';
+                return false;
+            }
+            
+            document.getElementById('welcomeMsg').textContent = 'Administrador: ' + username;
+            return true;
+        }
+
+        // Inicialização
+        document.addEventListener('DOMContentLoaded', function() {
+            if (!checkAuth()) return;
+            carregarEspecies();
+            carregarCategorias();
+
+            // Preview de imagem
+            document.getElementById('imagemUrl').addEventListener('input', function() {
+                var url = this.value;
+                var preview = document.getElementById('imagePreview');
+                if (url) {
+                    preview.innerHTML = '<img src="' + url + '" onerror="this.style.display=\'none\'" alt="Preview">';
+                } else {
+                    preview.innerHTML = '';
+                }
+            });
+        });
+
+        // Obter token JWT
+        function getToken() {
+            return localStorage.getItem('token') || localStorage.getItem('jwt_token');
+        }
+
+        // Carregar espécies da API
+        function carregarEspecies() {
+            fetch('/api/especies')
+                .then(function(response) { return response.json(); })
+                .then(function(data) {
+                    especies = data;
+                    renderizarEspecies(especies);
+                    atualizarEstatisticas();
+                })
+                .catch(function(error) {
+                    console.error('Erro ao carregar espécies:', error);
+                    showToast('Erro ao carregar espécies', 'error');
+                });
+        }
+
+        // Carregar categorias
+        function carregarCategorias() {
+            fetch('/api/especies/categorias')
+                .then(function(response) { return response.json(); })
+                .then(function(data) {
+                    categorias = data;
+                    var select = document.getElementById('filtroCategoria');
+                    data.forEach(function(cat) {
+                        if (cat) {
+                            var option = document.createElement('option');
+                            option.value = cat;
+                            option.textContent = cat;
+                            select.appendChild(option);
+                        }
+                    });
+                })
+                .catch(function(error) {
+                    console.error('Erro ao carregar categorias:', error);
+                });
+        }
+
+        // Renderizar grid de espécies
+        function renderizarEspecies(lista) {
+            var grid = document.getElementById('speciesGrid');
+            
+            if (lista.length === 0) {
+                grid.innerHTML = '<div class="loading"><p>Nenhuma espécie encontrada</p></div>';
+                return;
+            }
+
+            var html = '';
+            lista.forEach(function(esp) {
+                var statusClass = esp.statusConservacao ? 'status-' + esp.statusConservacao : '';
+                var statusText = getStatusText(esp.statusConservacao);
+                
+                html += '<div class="species-card">' +
+                    '<div class="species-image">' +
+                    (esp.imagemUrl 
+                        ? '<img src="' + esp.imagemUrl + '" alt="' + esp.nomeComum + '" onerror="this.parentElement.innerHTML=\'🐠\'">'
+                        : '🐠') +
+                    '</div>' +
+                    '<div class="species-content">' +
+                    '<div class="species-header">' +
+                    '<div>' +
+                    '<div class="species-name">' + esp.nomeComum + '</div>' +
+                    '<div class="species-scientific">' + esp.nomeCientifico + '</div>' +
+                    '</div>' +
+                    (esp.categoria ? '<span class="species-category">' + esp.categoria + '</span>' : '') +
+                    '</div>' +
+                    '<div class="species-info">' +
+                    (esp.habitat ? '<div class="species-info-item"><span class="label">Habitat:</span><span class="value">' + esp.habitat + '</span></div>' : '') +
+                    (esp.statusConservacao ? '<div class="species-info-item"><span class="conservation-status ' + statusClass + '">' + statusText + '</span></div>' : '') +
+                    '</div>' +
+                    '<div class="species-actions">' +
+                    '<button class="btn btn-edit" onclick="editarEspecie(' + esp.id + ')">✏️ Editar</button>' +
+                    '<button class="btn btn-delete" onclick="abrirModalExclusao(' + esp.id + ', \'' + esp.nomeComum.replace(/'/g, "\\'") + '\')">🗑️ Excluir</button>' +
+                    '</div>' +
+                    '</div>' +
+                    '</div>';
+            });
+
+            grid.innerHTML = html;
+        }
+
+        // Atualizar estatísticas
+        function atualizarEstatisticas() {
+            document.getElementById('totalEspecies').textContent = especies.length;
+            
+            var categoriasUnicas = [];
+            especies.forEach(function(esp) {
+                if (esp.categoria && categoriasUnicas.indexOf(esp.categoria) === -1) {
+                    categoriasUnicas.push(esp.categoria);
+                }
+            });
+            document.getElementById('totalCategorias').textContent = categoriasUnicas.length;
+            
+            var ameacadas = especies.filter(function(esp) {
+                return esp.statusConservacao && ['VU', 'EN', 'CR', 'EW', 'EX'].indexOf(esp.statusConservacao) !== -1;
+            }).length;
+            document.getElementById('especiesAmeacadas').textContent = ameacadas;
+        }
+
+        // Obter texto do status
+        function getStatusText(status) {
+            var statusMap = {
+                'LC': 'Pouco Preocupante',
+                'NT': 'Quase Ameaçado',
+                'VU': 'Vulnerável',
+                'EN': 'Em Perigo',
+                'CR': 'Criticamente Ameaçado',
+                'EW': 'Extinto na Natureza',
+                'EX': 'Extinto'
+            };
+            return statusMap[status] || status || '';
+        }
+
+        // Aplicar filtros
+        function aplicarFiltros() {
+            var nome = document.getElementById('filtroNome').value.toLowerCase();
+            var categoria = document.getElementById('filtroCategoria').value;
+            var status = document.getElementById('filtroStatus').value;
+
+            var filtradas = especies.filter(function(esp) {
+                var matchNome = !nome || 
+                    esp.nomeComum.toLowerCase().indexOf(nome) !== -1 || 
+                    esp.nomeCientifico.toLowerCase().indexOf(nome) !== -1;
+                var matchCategoria = !categoria || esp.categoria === categoria;
+                var matchStatus = !status || esp.statusConservacao === status;
+                return matchNome && matchCategoria && matchStatus;
+            });
+
+            renderizarEspecies(filtradas);
+        }
+
+        // Abrir modal para nova espécie
+        function abrirModalNova() {
+            document.getElementById('modalTitulo').textContent = 'Nova Espécie';
+            document.getElementById('formEspecie').reset();
+            document.getElementById('especieId').value = '';
+            document.getElementById('reino').value = 'Animalia';
+            document.getElementById('imagePreview').innerHTML = '';
+            document.getElementById('modalEspecie').classList.add('active');
+        }
+
+        // Editar espécie
+        function editarEspecie(id) {
+            var especie = especies.find(function(e) { return e.id === id; });
+            if (!especie) return;
+
+            document.getElementById('modalTitulo').textContent = 'Editar Espécie';
+            document.getElementById('especieId').value = especie.id;
+            document.getElementById('nomeComum').value = especie.nomeComum || '';
+            document.getElementById('nomeCientifico').value = especie.nomeCientifico || '';
+            document.getElementById('categoria').value = especie.categoria || '';
+            document.getElementById('statusConservacao').value = especie.statusConservacao || '';
+            document.getElementById('reino').value = especie.reino || '';
+            document.getElementById('filo').value = especie.filo || '';
+            document.getElementById('classe').value = especie.classe || '';
+            document.getElementById('ordem').value = especie.ordem || '';
+            document.getElementById('familia').value = especie.familia || '';
+            document.getElementById('genero').value = especie.genero || '';
+            document.getElementById('descricao').value = especie.descricao || '';
+            document.getElementById('habitat').value = especie.habitat || '';
+            document.getElementById('dieta').value = especie.dieta || '';
+            document.getElementById('distribuicaoGeografica').value = especie.distribuicaoGeografica || '';
+            document.getElementById('caracteristicasDistintivas').value = especie.caracteristicasDistintivas || '';
+            document.getElementById('imagemUrl').value = especie.imagemUrl || '';
+
+            if (especie.imagemUrl) {
+                document.getElementById('imagePreview').innerHTML = '<img src="' + especie.imagemUrl + '" alt="Preview">';
+            }
+
+            document.getElementById('modalEspecie').classList.add('active');
+        }
+
+        // Salvar espécie
+        function salvarEspecie(event) {
+            event.preventDefault();
+
+            var id = document.getElementById('especieId').value;
+            var especie = {
+                nomeComum: document.getElementById('nomeComum').value,
+                nomeCientifico: document.getElementById('nomeCientifico').value,
+                categoria: document.getElementById('categoria').value,
+                statusConservacao: document.getElementById('statusConservacao').value,
+                reino: document.getElementById('reino').value,
+                filo: document.getElementById('filo').value,
+                classe: document.getElementById('classe').value,
+                ordem: document.getElementById('ordem').value,
+                familia: document.getElementById('familia').value,
+                genero: document.getElementById('genero').value,
+                descricao: document.getElementById('descricao').value,
+                habitat: document.getElementById('habitat').value,
+                dieta: document.getElementById('dieta').value,
+                distribuicaoGeografica: document.getElementById('distribuicaoGeografica').value,
+                caracteristicasDistintivas: document.getElementById('caracteristicasDistintivas').value,
+                imagemUrl: document.getElementById('imagemUrl').value
+            };
+
+            var url = id ? '/api/especies/' + id : '/api/especies';
+            var method = id ? 'PUT' : 'POST';
+
+            fetch(url, {
+                method: method,
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + getToken()
+                },
+                body: JSON.stringify(especie)
+            })
+            .then(function(response) {
+                if (!response.ok) {
+                    throw new Error('Erro ao salvar');
+                }
+                return response.json();
+            })
+            .then(function(data) {
+                showToast(id ? 'Espécie atualizada com sucesso!' : 'Espécie cadastrada com sucesso!', 'success');
+                fecharModal();
+                carregarEspecies();
+            })
+            .catch(function(error) {
+                console.error('Erro:', error);
+                showToast('Erro ao salvar espécie. Verifique se está logado como admin.', 'error');
+            });
+        }
+
+        // Fechar modal
+        function fecharModal() {
+            document.getElementById('modalEspecie').classList.remove('active');
+        }
+
+        // Abrir modal de exclusão
+        function abrirModalExclusao(id, nome) {
+            especieParaExcluir = id;
+            document.getElementById('confirmMessage').textContent = 'Tem certeza que deseja excluir "' + nome + '"?';
+            document.getElementById('modalConfirm').classList.add('active');
+        }
+
+        // Fechar modal de confirmação
+        function fecharModalConfirm() {
+            document.getElementById('modalConfirm').classList.remove('active');
+            especieParaExcluir = null;
+        }
+
+        // Confirmar exclusão
+        function confirmarExclusao() {
+            if (!especieParaExcluir) return;
+
+            fetch('/api/especies/' + especieParaExcluir, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': 'Bearer ' + getToken()
+                }
+            })
+            .then(function(response) {
+                if (!response.ok) {
+                    throw new Error('Erro ao excluir');
+                }
+                showToast('Espécie excluída com sucesso!', 'success');
+                fecharModalConfirm();
+                carregarEspecies();
+            })
+            .catch(function(error) {
+                console.error('Erro:', error);
+                showToast('Erro ao excluir espécie. Verifique se está logado como admin.', 'error');
+            });
+        }
+
+        // Mostrar toast
+        function showToast(message, type) {
+            var toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = 'toast ' + type + ' show';
+            setTimeout(function() {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // Logout
+        function logout() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('jwt_token');
+            localStorage.removeItem('username');
+            localStorage.removeItem('role');
+            window.location.href = '/';
+        }
+    </script>
+</body>
+</html>
