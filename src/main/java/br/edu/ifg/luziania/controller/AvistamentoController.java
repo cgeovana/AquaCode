@@ -38,6 +38,13 @@ public class AvistamentoController {
     @Inject
     SecurityIdentity securityIdentity;
 
+    // Endpoint público - listar avistamentos aprovados (sem autenticação)
+    @GET
+    @Path("/publico")
+    public List<Avistamento> listarPublico() {
+        return avistamentoRepository.findAprovados();
+    }
+
     @GET
     @RolesAllowed({"user", "admin"})
     public List<Avistamento> listarTodos() {
@@ -67,6 +74,13 @@ public class AvistamentoController {
     @Path("/aprovados")
     public List<Avistamento> listarAprovados() {
         return avistamentoRepository.findAprovados();
+    }
+
+    @GET
+    @Path("/rejeitados")
+    @RolesAllowed("admin")
+    public List<Avistamento> listarRejeitados() {
+        return avistamentoRepository.findRejeitados();
     }
 
     @GET

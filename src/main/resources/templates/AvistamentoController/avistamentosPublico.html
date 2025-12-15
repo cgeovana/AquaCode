@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Avistamentos - AquaCode</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        /* Cabeçalho fixo */
+        .header-nav {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.8em;
+            font-weight: bold;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            cursor: pointer;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+            list-style: none;
+            align-items: center;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #2c3e50;
+            font-weight: 600;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: #667eea;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .welcome-msg {
+            color: #2c3e50;
+            font-weight: 600;
+        }
+
+        .btn-login {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 10px 25px;
+            border-radius: 20px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: transform 0.3s;
+        }
+
+        .btn-login:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn-admin {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 20px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: transform 0.3s;
+        }
+
+        .btn-admin:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn-logout {
+            background: #e74c3c;
+            color: white;
+            padding: 8px 20px;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+
+        .btn-logout:hover {
+            background: #c0392b;
+        }
+
+        /* Container principal */
+        .container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .page-title {
+            color: white;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .page-subtitle {
+            color: white;
+            opacity: 0.9;
+            margin-top: 10px;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .btn-novo {
+            background: linear-gradient(135deg, #27ae60 0%, #229954 100%);
+            color: white;
+            padding: 15px 30px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: transform 0.3s;
+        }
+
+        .btn-novo:hover {
+            transform: translateY(-3px);
+        }
+
+        .btn-meus {
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            color: white;
+            padding: 15px 30px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: transform 0.3s;
+        }
+
+        .btn-meus:hover {
+            transform: translateY(-3px);
+        }
+
+        /* Grid de avistamentos */
+        .avistamentos-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 25px;
+        }
+
+        .avistamento-card {
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            transition: transform 0.3s;
+        }
+
+        .avistamento-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .avistamento-imagem {
+            width: 100%;
+            height: 200px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4em;
+        }
+
+        .avistamento-imagem img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .avistamento-content {
+            padding: 20px;
+        }
+
+        .avistamento-especie {
+            font-size: 1.4em;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+
+        .avistamento-cientifico {
+            color: #888;
+            font-style: italic;
+            margin-bottom: 15px;
+        }
+
+        .avistamento-info {
+            color: #666;
+            margin-bottom: 8px;
+            font-size: 0.95em;
+        }
+
+        .avistamento-info strong {
+            color: #2c3e50;
+        }
+
+        .avistamento-autor {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+            color: #667eea;
+            font-weight: 600;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 15px;
+            font-size: 0.85em;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        .status-verificado { background: #d4edda; color: #155724; }
+        .status-aprovado { background: #d4edda; color: #155724; }
+
+        .sem-avistamentos {
+            text-align: center;
+            color: white;
+            font-size: 1.3em;
+            padding: 60px 20px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 20px;
+            grid-column: 1 / -1;
+        }
+
+        .stats-bar {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .stat-item {
+            background: rgba(255,255,255,0.2);
+            padding: 15px 25px;
+            border-radius: 15px;
+            color: white;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2em;
+            font-weight: bold;
+        }
+
+        .stat-label {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+
+        /* Botões de ação (visíveis apenas para proprietário) */
+        .card-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            padding-top: 10px;
+            border-top: 1px solid #eee;
+        }
+
+        .btn-editar {
+            flex: 1;
+            padding: 8px 15px;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.3s;
+        }
+
+        .btn-editar:hover {
+            background: #2980b9;
+        }
+
+        .btn-excluir {
+            padding: 8px 15px;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.3s;
+        }
+
+        .btn-excluir:hover {
+            background: #c0392b;
+        }
+
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+            
+            .page-header {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .header-actions {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Cabeçalho -->
+    <nav class="header-nav">
+        <div class="nav-container">
+            <div class="logo" onclick="window.location.href='/'">🐋 AquaCode</div>
+            <ul class="nav-links">
+                <li><a href="/">Início</a></li>
+                <li><a href="/especies/listar">🔍 Catálogo</a></li>
+                <li><a href="/mergulho/lista">Mergulhos</a></li>
+                <li><a href="/avistamentos">📍 Avistamentos</a></li>
+                <li><a href="/quiz">🎯 Quiz</a></li>
+            </ul>
+            <div class="user-info" id="userSection">
+                <!-- Preenchido via JavaScript -->
+            </div>
+        </div>
+    </nav>
+
+    <!-- Conteúdo -->
+    <div class="container">
+        <div class="page-header">
+            <div>
+                <h1 class="page-title">📍 Avistamentos da Comunidade</h1>
+                <p class="page-subtitle">Descubra as espécies marinhas avistadas por nossa comunidade</p>
+            </div>
+            <div class="header-actions" id="headerActions">
+                <!-- Preenchido via JavaScript -->
+            </div>
+        </div>
+
+        <div class="stats-bar" id="statsBar">
+            <!-- Preenchido via JavaScript -->
+        </div>
+
+        <div id="listaAvistamentos" class="avistamentos-grid">
+            <!-- Preenchido via JavaScript -->
+        </div>
+    </div>
+
+    <script>
+        let isLoggedIn = false;
+        let currentUsername = null;
+        let currentRole = null;
+
+        // Verificar se está logado (sem redirecionar)
+        function checkLoginStatus() {
+            const token = localStorage.getItem('token');
+            const username = localStorage.getItem('username');
+            const role = localStorage.getItem('role');
+            
+            const userSection = document.getElementById('userSection');
+            const headerActions = document.getElementById('headerActions');
+            
+            if (token && username) {
+                isLoggedIn = true;
+                currentUsername = username;
+                currentRole = role;
+                
+                // Mostrar info do usuário logado
+                let adminBtn = role === 'admin' ? 
+                    '<a href="/avistamentos/admin" class="btn-admin">Área Admin</a>' : '';
+                
+                userSection.innerHTML = 
+                    '<span class="welcome-msg">Olá, ' + username + '</span>' +
+                    adminBtn +
+                    '<button onclick="logout()" class="btn-logout">Sair</button>';
+                
+                // Mostrar botões de ação
+                headerActions.innerHTML = 
+                    '<a href="/avistamentos/registrar" class="btn-novo">+ Novo Avistamento</a>' +
+                    '<a href="/avistamentos/lista" class="btn-meus">📋 Meus Avistamentos</a>';
+            } else {
+                isLoggedIn = false;
+                currentUsername = null;
+                currentRole = null;
+                
+                // Mostrar botão de login
+                userSection.innerHTML = '<a href="/login" class="btn-login">Entrar</a>';
+                
+                // Mostrar apenas convite para login
+                headerActions.innerHTML = 
+                    '<a href="/login" class="btn-novo">Faça login para registrar</a>';
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('username');
+            localStorage.removeItem('role');
+            window.location.reload();
+        }
+
+        async function carregarAvistamentos() {
+            try {
+                // Buscar avistamentos aprovados (endpoint público)
+                const response = await fetch('/api/avistamentos/publico');
+                
+                if (!response.ok) {
+                    throw new Error('Erro ao carregar avistamentos');
+                }
+                
+                const avistamentos = await response.json();
+                
+                // Exibir estatísticas
+                exibirEstatisticas(avistamentos);
+                
+                // Exibir avistamentos
+                exibirAvistamentos(avistamentos);
+            } catch (error) {
+                console.error('Erro:', error);
+                document.getElementById('listaAvistamentos').innerHTML = 
+                    '<div class="sem-avistamentos">Erro ao carregar avistamentos. Tente novamente.</div>';
+            }
+        }
+
+        function exibirEstatisticas(avistamentos) {
+            const statsBar = document.getElementById('statsBar');
+            
+            // Contar espécies únicas
+            const especiesUnicas = new Set(avistamentos.map(a => a.nomeEspecie)).size;
+            
+            // Contar contribuidores únicos
+            const contribuidores = new Set(avistamentos.map(a => a.usuario?.nome || 'Anônimo')).size;
+            
+            statsBar.innerHTML = 
+                '<div class="stat-item">' +
+                    '<div class="stat-number">' + avistamentos.length + '</div>' +
+                    '<div class="stat-label">Avistamentos</div>' +
+                '</div>' +
+                '<div class="stat-item">' +
+                    '<div class="stat-number">' + especiesUnicas + '</div>' +
+                    '<div class="stat-label">Espécies Diferentes</div>' +
+                '</div>' +
+                '<div class="stat-item">' +
+                    '<div class="stat-number">' + contribuidores + '</div>' +
+                    '<div class="stat-label">Contribuidores</div>' +
+                '</div>';
+        }
+
+        function exibirAvistamentos(avistamentos) {
+            const container = document.getElementById('listaAvistamentos');
+            
+            if (avistamentos.length === 0) {
+                container.innerHTML = '<div class="sem-avistamentos">' +
+                    '<p>Nenhum avistamento registrado ainda.</p>' +
+                    '<p style="margin-top: 15px">Seja o primeiro a contribuir!</p>' +
+                '</div>';
+                return;
+            }
+            
+            container.innerHTML = avistamentos.map(function(a) {
+                var data = new Date(a.dataHoraAvistamento).toLocaleDateString('pt-BR');
+                var imgHtml = a.fotoUrl ? '<img src="' + a.fotoUrl + '" alt="' + a.nomeEspecie + '">' : '🐠';
+                var cientificoHtml = a.nomeCientifico ? '<p class="avistamento-cientifico">' + a.nomeCientifico + '</p>' : '';
+                var localHtml = a.localDescricao || 'Local não especificado';
+                var autorNome = a.usuario ? a.usuario.nome : 'Anônimo';
+                
+                // Verificar se o usuário logado é o autor ou admin
+                var canEdit = isLoggedIn && (currentRole === 'admin' || 
+                    (a.usuario && a.usuario.username === currentUsername));
+                
+                var actionsHtml = '';
+                if (canEdit) {
+                    actionsHtml = '<div class="card-actions">' +
+                        '<button class="btn-excluir" onclick="excluirAvistamento(' + a.id + ')">🗑️ Excluir</button>' +
+                    '</div>';
+                }
+                
+                return '<div class="avistamento-card">' +
+                    '<div class="avistamento-imagem">' + imgHtml + '</div>' +
+                    '<div class="avistamento-content">' +
+                        '<h3 class="avistamento-especie">' + a.nomeEspecie + '</h3>' +
+                        cientificoHtml +
+                        '<p class="avistamento-info"><strong>📅</strong> ' + data + '</p>' +
+                        '<p class="avistamento-info"><strong>📍</strong> ' + localHtml + '</p>' +
+                        '<div class="avistamento-autor">👤 ' + autorNome + '</div>' +
+                        '<span class="status-badge status-verificado">✓ Verificado</span>' +
+                        actionsHtml +
+                    '</div>' +
+                '</div>';
+            }).join('');
+        }
+
+        async function excluirAvistamento(id) {
+            if (!confirm('Tem certeza que deseja excluir este avistamento?')) {
+                return;
+            }
+            
+            const token = localStorage.getItem('token');
+            if (!token) {
+                alert('Você precisa estar logado para excluir.');
+                return;
+            }
+            
+            try {
+                const response = await fetch('/api/avistamentos/' + id, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': 'Bearer ' + token
+                    }
+                });
+                
+                if (response.ok) {
+                    alert('Avistamento excluído com sucesso!');
+                    carregarAvistamentos();
+                } else {
+                    const error = await response.text();
+                    alert('Erro ao excluir: ' + error);
+                }
+            } catch (error) {
+                console.error('Erro:', error);
+                alert('Erro ao excluir avistamento.');
+            }
+        }
+
+        // Inicializar
+        checkLoginStatus();
+        carregarAvistamentos();
+    </script>
+</body>
+</html>

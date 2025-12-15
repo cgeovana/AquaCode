@@ -1,12 +1,19 @@
 package br.edu.ifg.luziania.entity;
 
+import java.time.LocalDateTime;
+
 import io.quarkus.elytron.security.common.BcryptUtil;
 import io.quarkus.security.jpa.Password;
 import io.quarkus.security.jpa.Roles;
 import io.quarkus.security.jpa.UserDefinition;
 import io.quarkus.security.jpa.Username;
-import jakarta.persistence.*;
-import java.time.LocalDateTime;
+import jakarta.json.bind.annotation.JsonbTransient;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "usuarios")
@@ -22,6 +29,7 @@ public class Usuario {
     private String username;
 
     @Password
+    @JsonbTransient
     @Column(nullable = false)
     private String password;
 

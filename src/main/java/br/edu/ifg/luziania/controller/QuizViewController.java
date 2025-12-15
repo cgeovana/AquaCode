@@ -16,9 +16,20 @@ public class QuizViewController {
     @Location("QuizController/quiz.html")
     Template quiz;
 
+    @Inject
+    @Location("QuizController/adminQuiz.html")
+    Template adminQuiz;
+
     @GET
     @Produces(MediaType.TEXT_HTML)
     public TemplateInstance index() {
         return quiz.instance();
+    }
+
+    @GET
+    @Path("/admin")
+    @Produces(MediaType.TEXT_HTML)
+    public TemplateInstance admin() {
+        return adminQuiz.instance();
     }
 }

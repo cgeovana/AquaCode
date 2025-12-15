@@ -24,6 +24,17 @@ public class AvistamentoViewController {
     @Location("AvistamentoController/adminAvistamentos.html")
     Template adminAvistamentos;
 
+    @Inject
+    @Location("AvistamentoController/avistamentosPublico.html")
+    Template avistamentosPublico;
+
+    // Rota principal - lista pública de avistamentos
+    @GET
+    @Produces(MediaType.TEXT_HTML)
+    public TemplateInstance index() {
+        return avistamentosPublico.instance();
+    }
+
     @GET
     @Path("/registrar")
     @Produces(MediaType.TEXT_HTML)
@@ -32,7 +43,7 @@ public class AvistamentoViewController {
     }
 
     @GET
-    @Path("/listar")
+    @Path("/lista")
     @Produces(MediaType.TEXT_HTML)
     public TemplateInstance listar() {
         return listarAvistamentos.instance();

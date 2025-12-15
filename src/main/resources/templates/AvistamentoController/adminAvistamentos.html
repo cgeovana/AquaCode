@@ -388,9 +388,9 @@
             <div class="logo" onclick="window.location.href='/'">🐋 AquaCode</div>
             <ul class="nav-links">
                 <li><a href="/">Início</a></li>
-                <li><a href="/especies/listar">Catálogo</a></li>
-                <li><a href="/avistamentos/admin">Admin Avistamentos</a></li>
-                <li><a href="/quiz">Quiz</a></li>
+                <li><a href="/especies/listar/admin">Catálogo</a></li>
+                <li><a href="/avistamentos/admin">Avistamentos</a></li>
+                <li><a href="/quiz/admin">Quiz</a></li>
             </ul>
             <div class="user-info">
                 <span class="welcome-msg" id="welcomeMsg"></span>
@@ -429,8 +429,8 @@
             <div class="filter-group">
                 <label for="filtroStatus">Status</label>
                 <select id="filtroStatus">
-                    <option value="">Todos</option>
-                    <option value="PENDENTE" selected>Pendentes</option>
+                    <option value="" selected>Todos</option>
+                    <option value="PENDENTE">Pendentes</option>
                     <option value="APROVADO">Aprovados</option>
                     <option value="REJEITADO">Rejeitados</option>
                 </select>
@@ -542,6 +542,7 @@
                 let url = '/api/avistamentos';
                 if (status === 'PENDENTE') url = '/api/avistamentos/pendentes';
                 else if (status === 'APROVADO') url = '/api/avistamentos/aprovados';
+                else if (status === 'REJEITADO') url = '/api/avistamentos/rejeitados';
 
                 const response = await fetch(url, {
                     headers: { 'Authorization': 'Bearer ' + token }
@@ -623,6 +624,12 @@
                         (a.status === 'PENDENTE' ? 
                             '<button class="btn-action btn-aprovar" onclick="abrirModeracao(' + a.id + ', \'APROVADO\')">✓ Aprovar</button>' +
                             '<button class="btn-action btn-rejeitar" onclick="abrirModeracao(' + a.id + ', \'REJEITADO\')">✗ Rejeitar</button>'
+                            : '') +
+                        (a.status === 'APROVADO' ? 
+                            '<button class="btn-action btn-rejeitar" onclick="abrirModeracao(' + a.id + ', \'REJEITADO\')">✗ Rejeitar</button>'
+                            : '') +
+                        (a.status === 'REJEITADO' ? 
+                            '<button class="btn-action btn-aprovar" onclick="abrirModeracao(' + a.id + ', \'APROVADO\')">✓ Aprovar</button>'
                             : '') +
                         '<button class="btn-action btn-deletar" onclick="deletarAvistamento(' + a.id + ')">🗑️</button>' +
                     '</td>' +

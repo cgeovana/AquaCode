@@ -1,0 +1,1069 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Administração de Quiz - AquaCode</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        /* Cabeçalho fixo */
+        .header-nav {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.8em;
+            font-weight: bold;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            cursor: pointer;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+            list-style: none;
+            align-items: center;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #2c3e50;
+            font-weight: 600;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: #667eea;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .welcome-msg {
+            color: #2c3e50;
+            font-weight: 600;
+        }
+
+        .btn-logout {
+            background: #e74c3c;
+            color: white;
+            padding: 8px 20px;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+
+        .btn-logout:hover {
+            background: #c0392b;
+        }
+
+        /* Container principal */
+        .container {
+            max-width: 1400px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .page-title {
+            color: white;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .page-subtitle {
+            color: white;
+            font-size: 1.2em;
+            margin-bottom: 30px;
+            opacity: 0.9;
+        }
+
+        /* Cards de Quiz */
+        .quiz-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .quiz-card {
+            background: white;
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            transition: transform 0.3s;
+        }
+
+        .quiz-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .quiz-card.add-new {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            border: 3px dashed #667eea;
+            background: rgba(255,255,255,0.8);
+            min-height: 200px;
+        }
+
+        .quiz-card.add-new:hover {
+            background: white;
+        }
+
+        .quiz-card.add-new .icon {
+            font-size: 3em;
+            margin-bottom: 15px;
+        }
+
+        .quiz-card.add-new span {
+            color: #667eea;
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+
+        .quiz-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+
+        .quiz-title {
+            font-size: 1.4em;
+            color: #2c3e50;
+        }
+
+        .quiz-status {
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.85em;
+            font-weight: bold;
+        }
+
+        .status-ativo { background: #d4edda; color: #155724; }
+        .status-inativo { background: #f8d7da; color: #721c24; }
+
+        .quiz-desc {
+            color: #666;
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+
+        .quiz-stats {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .stat-label {
+            font-size: 0.85em;
+            color: #888;
+        }
+
+        .quiz-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-success {
+            background: #27ae60;
+            color: white;
+        }
+
+        .btn-warning {
+            background: #f39c12;
+            color: white;
+        }
+
+        .btn-danger {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .btn-secondary {
+            background: #95a5a6;
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            opacity: 0.9;
+        }
+
+        /* Seção de Questões */
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 40px 0 20px;
+        }
+
+        .section-title {
+            color: white;
+            font-size: 1.8em;
+        }
+
+        .questoes-container {
+            background: white;
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .questao-item {
+            padding: 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 15px;
+            margin-bottom: 15px;
+            transition: border-color 0.3s;
+        }
+
+        .questao-item:hover {
+            border-color: #667eea;
+        }
+
+        .questao-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+
+        .questao-numero {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        .questao-pergunta {
+            flex: 1;
+            margin-left: 15px;
+            font-size: 1.1em;
+            color: #2c3e50;
+        }
+
+        .questao-opcoes {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin: 15px 0;
+        }
+
+        .opcao {
+            padding: 10px 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            font-size: 0.95em;
+        }
+
+        .opcao.correta {
+            background: #d4edda;
+            border: 2px solid #27ae60;
+        }
+
+        .questao-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 0.9em;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            max-width: 700px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .modal-title {
+            font-size: 1.5em;
+            color: #2c3e50;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5em;
+            cursor: pointer;
+            color: #888;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #2c3e50;
+            font-weight: 600;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1em;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .form-check {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .form-check input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+        }
+
+        .opcoes-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .opcao-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .opcao-group input[type="radio"] {
+            width: 20px;
+            height: 20px;
+        }
+
+        .opcao-group input[type="text"] {
+            flex: 1;
+        }
+
+        .modal-footer {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 25px;
+        }
+
+        .loading {
+            text-align: center;
+            color: white;
+            font-size: 1.5em;
+            padding: 60px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px;
+            color: #666;
+        }
+
+        .empty-state h3 {
+            margin-bottom: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+
+            .quiz-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .questao-opcoes {
+                grid-template-columns: 1fr;
+            }
+
+            .form-row, .opcoes-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Cabeçalho -->
+    <nav class="header-nav">
+        <div class="nav-container">
+            <div class="logo" onclick="window.location.href='/'">🐋 AquaCode</div>
+            <ul class="nav-links">
+                <li><a href="/">Início</a></li>
+                <li><a href="/especies/listar">Catálogo</a></li>
+                <li><a href="/avistamentos/admin">Admin Avistamentos</a></li>
+                <li><a href="/quiz/admin">Admin Quiz</a></li>
+            </ul>
+            <div class="user-info">
+                <span class="welcome-msg" id="welcomeMsg"></span>
+                <button onclick="logout()" class="btn-logout">Sair</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Conteúdo -->
+    <div class="container">
+        <div class="page-header">
+            <div>
+                <h1 class="page-title">🎯 Administração de Quiz</h1>
+                <p class="page-subtitle">Gerencie os quizzes e suas questões</p>
+            </div>
+        </div>
+
+        <!-- Loading -->
+        <div id="loading" class="loading">Carregando quizzes...</div>
+
+        <!-- Grid de Quizzes -->
+        <div id="quizGrid" class="quiz-grid" style="display: none;">
+            <!-- Card para adicionar novo quiz -->
+            <div class="quiz-card add-new" onclick="abrirModalQuiz()">
+                <div class="icon">➕</div>
+                <span>Criar Novo Quiz</span>
+            </div>
+            <!-- Quizzes serão inseridos aqui -->
+        </div>
+
+        <!-- Seção de Questões do Quiz Selecionado -->
+        <div id="questoesSection" style="display: none;">
+            <div class="section-header">
+                <h2 class="section-title" id="questoesTitulo">Questões do Quiz</h2>
+                <button class="btn btn-success" onclick="abrirModalQuestao()">➕ Nova Questão</button>
+            </div>
+
+            <div class="questoes-container">
+                <div id="questoesLoading" class="loading" style="display: none;">Carregando questões...</div>
+                <div id="questoesList"></div>
+                <div id="questoesEmpty" class="empty-state" style="display: none;">
+                    <h3>Nenhuma questão cadastrada</h3>
+                    <p>Clique em "Nova Questão" para adicionar a primeira questão.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Criar/Editar Quiz -->
+    <div id="modalQuiz" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="modalQuizTitulo">Criar Novo Quiz</h2>
+                <button class="modal-close" onclick="fecharModal('modalQuiz')">&times;</button>
+            </div>
+            <form id="formQuiz">
+                <div class="form-group">
+                    <label for="quizTitulo">Título do Quiz *</label>
+                    <input type="text" id="quizTitulo" required placeholder="Ex: Quiz de Espécies Marinhas">
+                </div>
+                <div class="form-group">
+                    <label for="quizDescricao">Descrição</label>
+                    <textarea id="quizDescricao" rows="3" placeholder="Descreva o objetivo do quiz..."></textarea>
+                </div>
+                <div class="form-group">
+                    <div class="form-check">
+                        <input type="checkbox" id="quizAtivo" checked>
+                        <label for="quizAtivo">Quiz Ativo (visível para usuários)</label>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="fecharModal('modalQuiz')">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Salvar Quiz</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Criar/Editar Questão -->
+    <div id="modalQuestao" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="modalQuestaoTitulo">Nova Questão</h2>
+                <button class="modal-close" onclick="fecharModal('modalQuestao')">&times;</button>
+            </div>
+            <form id="formQuestao">
+                <div class="form-group">
+                    <label for="questaoEspecie">Espécie Relacionada *</label>
+                    <select id="questaoEspecie" required>
+                        <option value="">Selecione uma espécie...</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="questaoPergunta">Pergunta *</label>
+                    <input type="text" id="questaoPergunta" required placeholder="Ex: Qual é esta espécie marinha?">
+                </div>
+                <div class="form-group">
+                    <label for="questaoImagem">URL da Imagem (opcional)</label>
+                    <input type="url" id="questaoImagem" placeholder="https://...">
+                </div>
+                <div class="form-group">
+                    <label>Opções de Resposta * (marque a correta)</label>
+                    <div class="opcoes-grid">
+                        <div class="opcao-group">
+                            <input type="radio" name="respostaCorreta" value="A" required>
+                            <label>A:</label>
+                            <input type="text" id="opcaoA" required placeholder="Opção A">
+                        </div>
+                        <div class="opcao-group">
+                            <input type="radio" name="respostaCorreta" value="B">
+                            <label>B:</label>
+                            <input type="text" id="opcaoB" required placeholder="Opção B">
+                        </div>
+                        <div class="opcao-group">
+                            <input type="radio" name="respostaCorreta" value="C">
+                            <label>C:</label>
+                            <input type="text" id="opcaoC" required placeholder="Opção C">
+                        </div>
+                        <div class="opcao-group">
+                            <input type="radio" name="respostaCorreta" value="D">
+                            <label>D:</label>
+                            <input type="text" id="opcaoD" required placeholder="Opção D">
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="questaoExplicacao">Explicação (exibida após resposta)</label>
+                    <textarea id="questaoExplicacao" rows="3" placeholder="Explique por que esta é a resposta correta..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="questaoOrdem">Ordem</label>
+                    <input type="number" id="questaoOrdem" value="0" min="0">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="fecharModal('modalQuestao')">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Salvar Questão</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        let quizzes = [];
+        let especies = [];
+        let quizSelecionado = null;
+        let questoes = [];
+        let editandoQuizId = null;
+
+        // Verificar autenticação (apenas admin)
+        function checkAuth() {
+            const token = localStorage.getItem('token');
+            const username = localStorage.getItem('username');
+            const role = localStorage.getItem('role');
+            
+            if (!token || role !== 'admin') {
+                alert('Acesso negado. Apenas administradores podem acessar esta página.');
+                window.location.href = '/';
+                return false;
+            }
+            
+            document.getElementById('welcomeMsg').textContent = 'Administrador: ' + username;
+            return true;
+        }
+
+        function logout() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('username');
+            localStorage.removeItem('role');
+            window.location.href = '/';
+        }
+
+        // Carregar Quizzes
+        async function carregarQuizzes() {
+            const token = localStorage.getItem('token');
+            
+            try {
+                const response = await fetch('/api/quiz/todos', {
+                    headers: { 'Authorization': 'Bearer ' + token }
+                });
+
+                if (!response.ok) throw new Error('Erro ao carregar quizzes');
+
+                quizzes = await response.json();
+                renderizarQuizzes();
+                
+            } catch (error) {
+                console.error('Erro:', error);
+                document.getElementById('loading').textContent = 'Erro ao carregar quizzes';
+            }
+        }
+
+        // Carregar Espécies
+        async function carregarEspecies() {
+            try {
+                const response = await fetch('/api/especies');
+                if (!response.ok) throw new Error('Erro ao carregar espécies');
+                especies = await response.json();
+                
+                const select = document.getElementById('questaoEspecie');
+                select.innerHTML = '<option value="">Selecione uma espécie...</option>' +
+                    especies.map(e => '<option value="' + e.id + '">' + e.nomePopular + ' (' + e.nomeCientifico + ')</option>').join('');
+                
+            } catch (error) {
+                console.error('Erro ao carregar espécies:', error);
+            }
+        }
+
+        function renderizarQuizzes() {
+            const grid = document.getElementById('quizGrid');
+            const loading = document.getElementById('loading');
+            
+            loading.style.display = 'none';
+            grid.style.display = 'grid';
+
+            // Manter o card de adicionar e adicionar os quizzes
+            const addCard = grid.querySelector('.add-new');
+            grid.innerHTML = '';
+            grid.appendChild(addCard);
+
+            quizzes.forEach(quiz => {
+                const card = document.createElement('div');
+                card.className = 'quiz-card';
+                
+                const statusClass = quiz.ativo ? 'status-ativo' : 'status-inativo';
+                const statusText = quiz.ativo ? 'Ativo' : 'Inativo';
+                const descricao = quiz.descricao || 'Sem descrição';
+                const numQuestoes = quiz.questoes ? quiz.questoes.length : 0;
+                const btnText = quiz.ativo ? '🔒 Desativar' : '🔓 Ativar';
+                
+                card.innerHTML = '<div class="quiz-header">' +
+                    '<h3 class="quiz-title">' + quiz.titulo + '</h3>' +
+                    '<span class="quiz-status ' + statusClass + '">' + statusText + '</span>' +
+                    '</div>' +
+                    '<p class="quiz-desc">' + descricao + '</p>' +
+                    '<div class="quiz-stats">' +
+                    '<div class="stat">' +
+                    '<div class="stat-value">' + numQuestoes + '</div>' +
+                    '<div class="stat-label">Questões</div>' +
+                    '</div>' +
+                    '</div>' +
+                    '<div class="quiz-actions">' +
+                    '<button class="btn btn-primary btn-sm" onclick="gerenciarQuestoes(' + quiz.id + ')">📝 Questões</button>' +
+                    '<button class="btn btn-warning btn-sm" onclick="toggleQuizAtivo(' + quiz.id + ', ' + (!quiz.ativo) + ')">' + btnText + '</button>' +
+                    '<button class="btn btn-danger btn-sm" onclick="deletarQuiz(' + quiz.id + ')">🗑️</button>' +
+                    '</div>';
+                    
+                grid.appendChild(card);
+            });
+        }
+
+        // Modal Quiz
+        function abrirModalQuiz(quizId = null) {
+            editandoQuizId = quizId;
+            
+            if (quizId) {
+                const quiz = quizzes.find(q => q.id === quizId);
+                if (quiz) {
+                    document.getElementById('modalQuizTitulo').textContent = 'Editar Quiz';
+                    document.getElementById('quizTitulo').value = quiz.titulo;
+                    document.getElementById('quizDescricao').value = quiz.descricao || '';
+                    document.getElementById('quizAtivo').checked = quiz.ativo;
+                }
+            } else {
+                document.getElementById('modalQuizTitulo').textContent = 'Criar Novo Quiz';
+                document.getElementById('formQuiz').reset();
+                document.getElementById('quizAtivo').checked = true;
+            }
+            
+            document.getElementById('modalQuiz').classList.add('active');
+        }
+
+        // Salvar Quiz
+        document.getElementById('formQuiz').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const token = localStorage.getItem('token');
+            const quiz = {
+                titulo: document.getElementById('quizTitulo').value,
+                descricao: document.getElementById('quizDescricao').value,
+                ativo: document.getElementById('quizAtivo').checked
+            };
+            
+            try {
+                const url = editandoQuizId ? '/api/quiz/' + editandoQuizId : '/api/quiz';
+                const method = editandoQuizId ? 'PUT' : 'POST';
+                
+                const response = await fetch(url, {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + token
+                    },
+                    body: JSON.stringify(quiz)
+                });
+
+                if (!response.ok) throw new Error('Erro ao salvar quiz');
+
+                fecharModal('modalQuiz');
+                carregarQuizzes();
+                alert('Quiz salvo com sucesso!');
+                
+            } catch (error) {
+                console.error('Erro:', error);
+                alert('Erro ao salvar quiz. Tente novamente.');
+            }
+        });
+
+        // Toggle Ativo
+        async function toggleQuizAtivo(quizId, novoStatus) {
+            const token = localStorage.getItem('token');
+            const quiz = quizzes.find(q => q.id === quizId);
+            
+            if (!quiz) return;
+            
+            quiz.ativo = novoStatus;
+            
+            try {
+                const response = await fetch('/api/quiz/' + quizId, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + token
+                    },
+                    body: JSON.stringify(quiz)
+                });
+
+                if (!response.ok) throw new Error('Erro ao atualizar quiz');
+                
+                carregarQuizzes();
+                
+            } catch (error) {
+                console.error('Erro:', error);
+                alert('Erro ao atualizar quiz.');
+            }
+        }
+
+        // Deletar Quiz
+        async function deletarQuiz(quizId) {
+            if (!confirm('Tem certeza que deseja deletar este quiz? Todas as questões serão removidas.')) {
+                return;
+            }
+            
+            const token = localStorage.getItem('token');
+            
+            try {
+                const response = await fetch('/api/quiz/' + quizId, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': 'Bearer ' + token }
+                });
+
+                if (!response.ok) throw new Error('Erro ao deletar quiz');
+
+                if (quizSelecionado === quizId) {
+                    document.getElementById('questoesSection').style.display = 'none';
+                    quizSelecionado = null;
+                }
+                
+                carregarQuizzes();
+                alert('Quiz deletado com sucesso!');
+                
+            } catch (error) {
+                console.error('Erro:', error);
+                alert('Erro ao deletar quiz.');
+            }
+        }
+
+        // Gerenciar Questões
+        async function gerenciarQuestoes(quizId) {
+            quizSelecionado = quizId;
+            const quiz = quizzes.find(q => q.id === quizId);
+            
+            document.getElementById('questoesTitulo').textContent = 'Questões: ' + quiz.titulo;
+            document.getElementById('questoesSection').style.display = 'block';
+            document.getElementById('questoesLoading').style.display = 'block';
+            document.getElementById('questoesList').innerHTML = '';
+            document.getElementById('questoesEmpty').style.display = 'none';
+            
+            const token = localStorage.getItem('token');
+            
+            try {
+                const response = await fetch('/api/quiz/' + quizId + '/questoes', {
+                    headers: { 'Authorization': 'Bearer ' + token }
+                });
+
+                if (!response.ok) throw new Error('Erro ao carregar questões');
+
+                questoes = await response.json();
+                renderizarQuestoes();
+                
+                // Scroll para a seção de questões
+                document.getElementById('questoesSection').scrollIntoView({ behavior: 'smooth' });
+                
+            } catch (error) {
+                console.error('Erro:', error);
+                document.getElementById('questoesLoading').textContent = 'Erro ao carregar questões';
+            }
+        }
+
+        function renderizarQuestoes() {
+            const lista = document.getElementById('questoesList');
+            const loading = document.getElementById('questoesLoading');
+            const empty = document.getElementById('questoesEmpty');
+            
+            loading.style.display = 'none';
+            
+            if (questoes.length === 0) {
+                empty.style.display = 'block';
+                return;
+            }
+            
+            lista.innerHTML = questoes.map((q, index) => {
+                var html = '<div class="questao-item">';
+                html += '<div class="questao-header">';
+                html += '<div class="questao-numero">' + (index + 1) + '</div>';
+                html += '<div class="questao-pergunta">' + q.pergunta + '</div>';
+                html += '</div>';
+                
+                if (q.imagemUrl) {
+                    html += '<img src="' + q.imagemUrl + '" alt="Imagem da questão" style="max-width: 200px; border-radius: 10px; margin-bottom: 15px;">';
+                }
+                
+                html += '<div class="questao-opcoes">';
+                html += '<div class="opcao ' + (q.respostaCorreta === 'A' ? 'correta' : '') + '"><strong>A:</strong> ' + q.opcaoA + '</div>';
+                html += '<div class="opcao ' + (q.respostaCorreta === 'B' ? 'correta' : '') + '"><strong>B:</strong> ' + q.opcaoB + '</div>';
+                html += '<div class="opcao ' + (q.respostaCorreta === 'C' ? 'correta' : '') + '"><strong>C:</strong> ' + q.opcaoC + '</div>';
+                html += '<div class="opcao ' + (q.respostaCorreta === 'D' ? 'correta' : '') + '"><strong>D:</strong> ' + q.opcaoD + '</div>';
+                html += '</div>';
+                
+                if (q.explicacao) {
+                    html += '<p style="color: #666; font-style: italic; margin-bottom: 15px;"><strong>Explicação:</strong> ' + q.explicacao + '</p>';
+                }
+                
+                html += '<div class="questao-actions">';
+                html += '<button class="btn btn-danger btn-sm" onclick="deletarQuestao(' + q.id + ')">🗑️ Remover</button>';
+                html += '</div>';
+                html += '</div>';
+                
+                return html;
+            }).join('');
+        }
+
+        // Modal Questão
+        function abrirModalQuestao() {
+            if (!quizSelecionado) {
+                alert('Selecione um quiz primeiro.');
+                return;
+            }
+            
+            document.getElementById('formQuestao').reset();
+            document.getElementById('modalQuestao').classList.add('active');
+        }
+
+        // Salvar Questão
+        document.getElementById('formQuestao').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const token = localStorage.getItem('token');
+            const respostaCorreta = document.querySelector('input[name="respostaCorreta"]:checked');
+            
+            if (!respostaCorreta) {
+                alert('Selecione a resposta correta.');
+                return;
+            }
+            
+            const questao = {
+                especie: { id: parseInt(document.getElementById('questaoEspecie').value) },
+                pergunta: document.getElementById('questaoPergunta').value,
+                imagemUrl: document.getElementById('questaoImagem').value,
+                opcaoA: document.getElementById('opcaoA').value,
+                opcaoB: document.getElementById('opcaoB').value,
+                opcaoC: document.getElementById('opcaoC').value,
+                opcaoD: document.getElementById('opcaoD').value,
+                respostaCorreta: respostaCorreta.value,
+                explicacao: document.getElementById('questaoExplicacao').value,
+                ordem: parseInt(document.getElementById('questaoOrdem').value) || 0
+            };
+            
+            try {
+                const response = await fetch('/api/quiz/' + quizSelecionado + '/questoes', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + token
+                    },
+                    body: JSON.stringify(questao)
+                });
+
+                if (!response.ok) throw new Error('Erro ao salvar questão');
+
+                fecharModal('modalQuestao');
+                gerenciarQuestoes(quizSelecionado);
+                carregarQuizzes(); // Atualiza contagem
+                alert('Questão adicionada com sucesso!');
+                
+            } catch (error) {
+                console.error('Erro:', error);
+                alert('Erro ao salvar questão. Tente novamente.');
+            }
+        });
+
+        // Deletar Questão
+        async function deletarQuestao(questaoId) {
+            if (!confirm('Tem certeza que deseja remover esta questão?')) {
+                return;
+            }
+            
+            const token = localStorage.getItem('token');
+            
+            try {
+                const response = await fetch('/api/quiz/questoes/' + questaoId, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': 'Bearer ' + token }
+                });
+
+                if (!response.ok) throw new Error('Erro ao deletar questão');
+
+                gerenciarQuestoes(quizSelecionado);
+                carregarQuizzes(); // Atualiza contagem
+                alert('Questão removida com sucesso!');
+                
+            } catch (error) {
+                console.error('Erro:', error);
+                alert('Erro ao remover questão.');
+            }
+        }
+
+        function fecharModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+        }
+
+        // Fechar modal ao clicar fora
+        document.querySelectorAll('.modal').forEach(modal => {
+            modal.addEventListener('click', function(e) {
+                if (e.target === this) {
+                    this.classList.remove('active');
+                }
+            });
+        });
+
+        // Inicializar
+        if (checkAuth()) {
+            carregarQuizzes();
+            carregarEspecies();
+        }
+    </script>
+</body>
+</html>

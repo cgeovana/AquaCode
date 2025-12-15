@@ -16,6 +16,7 @@ import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
+import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
@@ -36,6 +37,13 @@ public class QuizController {
     @GET
     public List<Quiz> listarQuizzes() {
         return quizRepository.findAtivos();
+    }
+
+    @GET
+    @Path("/todos")
+    @RolesAllowed("admin")
+    public List<Quiz> listarTodosQuizzes() {
+        return quizRepository.listAll();
     }
 
     @GET
@@ -78,6 +86,23 @@ public class QuizController {
     public Response criarQuiz(Quiz quiz) {
         quizRepository.persist(quiz);
         return Response.status(Response.Status.CREATED).entity(quiz).build();
+    }
+
+    @PUT
+    @Path("/{id}")
+    @Transactional
+    @RolesAllowed("admin")
+    public Response atualizarQuiz(@PathParam("id") Long id, Quiz quizAtualizado) {
+        Quiz quiz = quizRepository.findById(id);
+        if (quiz == null) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+        
+        quiz.setTitulo(quizAtualizado.getTitulo());
+        quiz.setDescricao(quizAtualizado.getDescricao());
+        quiz.setAtivo(quizAtualizado.getAtivo());
+        
+        return Response.ok(quiz).build();
     }
 
     @POST

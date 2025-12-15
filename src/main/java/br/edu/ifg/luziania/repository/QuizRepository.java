@@ -12,4 +12,8 @@ public class QuizRepository implements PanacheRepository<Quiz> {
     public List<Quiz> findAtivos() {
         return list("ativo = true ORDER BY titulo");
     }
+
+    public List<Quiz> findAll() {
+        return listAll();
+    }
 }

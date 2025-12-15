@@ -28,4 +28,8 @@ public class AvistamentoRepository implements PanacheRepository<Avistamento> {
     public List<Avistamento> findAprovados() {
         return list("status = 'APROVADO' ORDER BY dataHoraAvistamento DESC");
     }
+
+    public List<Avistamento> findRejeitados() {
+        return list("status = 'REJEITADO' ORDER BY dataModeracao DESC");
+    }
 }
