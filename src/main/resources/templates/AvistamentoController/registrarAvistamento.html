@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registrar Avistamento - AquaCode</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        /* Cabeçalho fixo */
+        .header-nav {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.8em;
+            font-weight: bold;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            cursor: pointer;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+            list-style: none;
+            align-items: center;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #2c3e50;
+            font-weight: 600;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: #667eea;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .welcome-msg {
+            color: #2c3e50;
+            font-weight: 600;
+        }
+
+        .btn-admin {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 20px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: transform 0.3s;
+        }
+
+        .btn-admin:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn-logout {
+            background: #e74c3c;
+            color: white;
+            padding: 8px 20px;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+
+        .btn-logout:hover {
+            background: #c0392b;
+        }
+
+        /* Container principal */
+        .container {
+            max-width: 700px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .page-title {
+            text-align: center;
+            color: white;
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .page-subtitle {
+            text-align: center;
+            color: white;
+            font-size: 1.2em;
+            margin-bottom: 40px;
+            opacity: 0.9;
+        }
+
+        /* Formulário */
+        .form-container {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+
+        .form-container h2 {
+            color: #2c3e50;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #2c3e50;
+            font-weight: 600;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1em;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .btn-localizacao {
+            width: 100%;
+            background: linear-gradient(135deg, #27ae60 0%, #229954 100%);
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 10px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+
+        .btn-localizacao:hover {
+            transform: translateY(-2px);
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .btn-primary, .btn-secondary {
+            flex: 1;
+            padding: 15px;
+            border-radius: 10px;
+            font-weight: bold;
+            font-size: 1em;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: #667eea;
+            border: 2px solid #667eea;
+        }
+
+        .btn-secondary:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        .mensagem {
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+            display: none;
+        }
+
+        .mensagem.sucesso {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .mensagem.erro {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Cabeçalho -->
+    <nav class="header-nav">
+        <div class="nav-container">
+            <div class="logo" onclick="window.location.href='/'">🐋 AquaCode</div>
+            <ul class="nav-links">
+                <li><a href="/">Início</a></li>
+                <li><a href="/especies/listar">🔍 Catálogo</a></li>
+                <li><a href="/mergulho/lista">Mergulhos</a></li>
+                <li><a href="/avistamentos/registrar">📍 Avistamentos</a></li>
+                <li><a href="/avistamentos/lista">📋 Meus Avistamentos</a></li>
+                <li><a href="/quiz">🎯 Quiz</a></li>
+            </ul>
+            <div class="user-info">
+                <span class="welcome-msg" id="welcomeMsg"></span>
+                <a href="/avistamentos/admin" class="btn-admin" id="btnAdmin" style="display: none;">Área Admin</a>
+                <button onclick="logout()" class="btn-logout">Sair</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Conteúdo -->
+    <div class="container">
+        <h1 class="page-title">📍 Registrar Avistamento</h1>
+        <p class="page-subtitle">Contribua com a ciência cidadã</p>
+
+        <div class="form-container">
+            <div id="mensagem" class="mensagem"></div>
+
+            <form id="formAvistamento">
+                <div class="form-group">
+                    <label for="nomeEspecie">Nome da Espécie *</label>
+                    <input type="text" id="nomeEspecie" name="nomeEspecie" required placeholder="Ex: Tartaruga-verde">
+                </div>
+
+                <div class="form-group">
+                    <label for="nomeCientifico">Nome Científico</label>
+                    <input type="text" id="nomeCientifico" name="nomeCientifico" placeholder="Ex: Chelonia mydas">
+                </div>
+
+                <div class="form-group">
+                    <label for="dataHoraAvistamento">Data e Hora do Avistamento *</label>
+                    <input type="datetime-local" id="dataHoraAvistamento" name="dataHoraAvistamento" required>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="latitude">Latitude *</label>
+                        <input type="number" step="0.000001" id="latitude" name="latitude" required placeholder="-23.5505">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="longitude">Longitude *</label>
+                        <input type="number" step="0.000001" id="longitude" name="longitude" required placeholder="-46.6333">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <button type="button" class="btn-localizacao" onclick="obterLocalizacao()">📍 Usar Minha Localização Atual</button>
+                </div>
+
+                <div class="form-group">
+                    <label for="localDescricao">Descrição do Local</label>
+                    <input type="text" id="localDescricao" name="localDescricao" placeholder="Ex: Praia de Copacabana, próximo às pedras">
+                </div>
+
+                <div class="form-group">
+                    <label for="observacoes">Observações</label>
+                    <textarea id="observacoes" name="observacoes" rows="4" placeholder="Descreva o comportamento observado, condições climáticas, etc."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="fotoUrl">URL da Foto (opcional)</label>
+                    <input type="url" id="fotoUrl" name="fotoUrl" placeholder="https://...">
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn-primary">Enviar Avistamento</button>
+                    <button type="button" onclick="window.location='/avistamentos/listar'" class="btn-secondary">Ver Meus Registros</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Verificar autenticação
+        function checkAuth() {
+            const token = localStorage.getItem('token');
+            const username = localStorage.getItem('username');
+            const role = localStorage.getItem('role');
+            
+            if (!token) {
+                window.location.href = '/login';
+                return false;
+            }
+            
+            const welcomeMsg = document.getElementById('welcomeMsg');
+            const btnAdmin = document.getElementById('btnAdmin');
+            
+            if (role === 'admin') {
+                welcomeMsg.textContent = 'Administrador: ' + username;
+                btnAdmin.style.display = 'inline-block';
+            } else {
+                welcomeMsg.textContent = 'Olá, ' + username;
+                btnAdmin.style.display = 'none';
+            }
+            
+            return true;
+        }
+
+        function logout() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('username');
+            localStorage.removeItem('role');
+            window.location.href = '/';
+        }
+
+        function mostrarMensagem(texto, tipo) {
+            const msg = document.getElementById('mensagem');
+            msg.textContent = texto;
+            msg.className = 'mensagem ' + tipo;
+            msg.style.display = 'block';
+            setTimeout(() => msg.style.display = 'none', 5000);
+        }
+
+        function obterLocalizacao() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        document.getElementById('latitude').value = position.coords.latitude.toFixed(6);
+                        document.getElementById('longitude').value = position.coords.longitude.toFixed(6);
+                        mostrarMensagem('Localização obtida com sucesso!', 'sucesso');
+                    },
+                    (error) => {
+                        mostrarMensagem('Erro ao obter localização: ' + error.message, 'erro');
+                    }
+                );
+            } else {
+                mostrarMensagem('Geolocalização não suportada pelo navegador.', 'erro');
+            }
+        }
+
+        document.getElementById('formAvistamento').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const token = localStorage.getItem('token');
+            
+            const avistamento = {
+                nomeEspecie: document.getElementById('nomeEspecie').value,
+                nomeCientifico: document.getElementById('nomeCientifico').value,
+                dataHoraAvistamento: document.getElementById('dataHoraAvistamento').value,
+                latitude: parseFloat(document.getElementById('latitude').value),
+                longitude: parseFloat(document.getElementById('longitude').value),
+                localDescricao: document.getElementById('localDescricao').value,
+                observacoes: document.getElementById('observacoes').value,
+                fotoUrl: document.getElementById('fotoUrl').value
+            };
+            
+            try {
+                const response = await fetch('/api/avistamentos', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + token
+                    },
+                    body: JSON.stringify(avistamento)
+                });
+                
+                if (!response.ok) {
+                    if (response.status === 401) {
+                        logout();
+                        return;
+                    }
+                    throw new Error('Erro ao enviar avistamento');
+                }
+                
+                mostrarMensagem('Avistamento registrado com sucesso!', 'sucesso');
+                this.reset();
+                
+            } catch (error) {
+                console.error('Erro:', error);
+                mostrarMensagem('Erro ao enviar avistamento. Tente novamente.', 'erro');
+            }
+        });
+
+        // Inicializar
+        if (checkAuth()) {
+            // Definir data/hora atual como padrão
+            const now = new Date();
+            const offset = now.getTimezoneOffset() * 60000;
+            const localISOTime = (new Date(now - offset)).toISOString().slice(0, 16);
+            document.getElementById('dataHoraAvistamento').value = localISOTime;
+        }
+    </script>
+</body>
+</html>

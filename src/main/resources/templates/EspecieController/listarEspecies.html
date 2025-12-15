@@ -1,0 +1,859 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catálogo de Espécies Marinhas - AquaCode</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        /* Cabeçalho fixo */
+        .header-nav {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.8em;
+            font-weight: bold;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            cursor: pointer;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+            list-style: none;
+            align-items: center;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #2c3e50;
+            font-weight: 600;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: #667eea;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .welcome-msg {
+            color: #2c3e50;
+            font-weight: 600;
+        }
+
+        .btn-admin {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 20px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: transform 0.3s;
+        }
+
+        .btn-admin:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn-logout {
+            background: #e74c3c;
+            color: white;
+            padding: 8px 20px;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+
+        .btn-logout:hover {
+            background: #c0392b;
+        }
+
+        /* Container principal */
+        .container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .page-title {
+            text-align: center;
+            color: white;
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .page-subtitle {
+            text-align: center;
+            color: white;
+            font-size: 1.2em;
+            margin-bottom: 40px;
+            opacity: 0.9;
+        }
+
+        /* Filtros */
+        .filtros {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-bottom: 40px;
+            padding: 25px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+
+        .filtros input,
+        .filtros select {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 25px;
+            font-size: 1em;
+            outline: none;
+            min-width: 250px;
+        }
+
+        .filtros input {
+            flex: 1;
+        }
+
+        .filtros select {
+            cursor: pointer;
+            background: white;
+        }
+
+        /* Grid de espécies */
+        .especies-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
+        }
+
+        .especie-card {
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            transition: transform 0.3s;
+            cursor: pointer;
+        }
+
+        .especie-card:hover {
+            transform: translateY(-10px);
+        }
+
+        .sem-imagem {
+            width: 100%;
+            height: 180px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4em;
+        }
+
+        .especie-imagem {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+        }
+
+        .especie-info {
+            padding: 20px;
+        }
+
+        .especie-info h3 {
+            color: #2c3e50;
+            margin-bottom: 5px;
+            font-size: 1.3em;
+        }
+
+        .cientifico {
+            color: #888;
+            font-size: 0.9em;
+            margin-bottom: 15px;
+        }
+
+        .categoria-badge {
+            display: inline-block;
+            padding: 5px 12px;
+            background: #667eea;
+            color: white;
+            border-radius: 15px;
+            font-size: 0.8em;
+            margin-right: 8px;
+        }
+
+        .conservacao-badge {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.8em;
+            font-weight: bold;
+        }
+
+        .conservacao-badge.lc { background: #d4edda; color: #155724; }
+        .conservacao-badge.nt { background: #fff3cd; color: #856404; }
+        .conservacao-badge.vu { background: #ffe5b4; color: #8b5a00; }
+        .conservacao-badge.en { background: #f8d7da; color: #721c24; }
+        .conservacao-badge.cr { background: #dc3545; color: white; }
+
+        .sem-dados {
+            text-align: center;
+            color: white;
+            font-size: 1.3em;
+            padding: 60px 20px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 20px;
+            grid-column: 1 / -1;
+        }
+
+        /* Modal */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            padding: 20px;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 20px;
+            max-width: 700px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 30px;
+            position: relative;
+        }
+
+        .modal-content h2 {
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+
+        .cientifico-grande {
+            color: #888;
+            margin-bottom: 20px;
+        }
+
+        .especie-imagem-grande {
+            width: 100%;
+            max-height: 300px;
+            object-fit: cover;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .taxonomia, .info-detalhada {
+            margin-bottom: 20px;
+        }
+
+        .taxonomia h3, .info-detalhada h3 {
+            color: #667eea;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+        }
+
+        .taxonomia p, .info-detalhada p {
+            margin-bottom: 8px;
+            line-height: 1.6;
+        }
+
+        .close {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 2em;
+            cursor: pointer;
+            color: #999;
+        }
+
+        .close:hover {
+            color: #333;
+        }
+
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+            
+            .filtros {
+                flex-direction: column;
+            }
+            
+            .filtros input,
+            .filtros select {
+                min-width: 100%;
+            }
+        }
+
+        /* Estilos para comentários */
+        .comentarios-section {
+            margin-top: 25px;
+            border-top: 2px solid #eee;
+            padding-top: 20px;
+        }
+
+        .comentarios-section h3 {
+            color: #667eea;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+        }
+
+        .form-comentario {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .form-comentario textarea {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-family: inherit;
+            font-size: 1em;
+            resize: none;
+            min-height: 60px;
+        }
+
+        .form-comentario textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn-comentar {
+            padding: 12px 25px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: transform 0.3s, opacity 0.3s;
+            align-self: flex-start;
+        }
+
+        .btn-comentar:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn-comentar:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .lista-comentarios {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .comentario-item {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 10px;
+        }
+
+        .comentario-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .comentario-autor {
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .comentario-data {
+            font-size: 0.85em;
+            color: #888;
+        }
+
+        .comentario-texto {
+            color: #333;
+            line-height: 1.5;
+        }
+
+        .comentario-actions {
+            margin-top: 8px;
+            text-align: right;
+        }
+
+        .btn-delete-comentario {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 5px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.85em;
+        }
+
+        .btn-delete-comentario:hover {
+            background: #c0392b;
+        }
+
+        .sem-comentarios {
+            text-align: center;
+            color: #888;
+            padding: 20px;
+            font-style: italic;
+        }
+
+        .comentarios-count {
+            background: #667eea;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 0.9em;
+            margin-left: 8px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Cabeçalho -->
+    <nav class="header-nav">
+        <div class="nav-container">
+            <div class="logo" onclick="window.location.href='/'">🐋 AquaCode</div>
+            <ul class="nav-links">
+                <li><a href="/">Início</a></li>
+                <li><a href="/especies/listar">🔍 Catálogo</a></li>
+                <li><a href="/mergulho/lista">Mergulhos</a></li>
+                <li><a href="/avistamentos/registrar">📍 Avistamentos</a></li>
+                <li><a href="/avistamentos/lista">📋 Meus Avistamentos</a></li>
+                <li><a href="/quiz">🎯 Quiz</a></li>
+            </ul>
+            <div class="user-info">
+                <span class="welcome-msg" id="welcomeMsg"></span>
+                <a href="/avistamentos/admin" class="btn-admin" id="btnAdmin" style="display: none;">Área Admin</a>
+                <button onclick="logout()" class="btn-logout">Sair</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Conteúdo -->
+    <div class="container">
+        <h1 class="page-title">🔍 Catálogo de Espécies Marinhas</h1>
+        <p class="page-subtitle">Explore nossa base de dados de vida marinha</p>
+
+        <div class="filtros">
+            <input type="text" id="busca" placeholder="🔍 Buscar por nome comum ou científico..." onkeyup="buscarEspecies()">
+            
+            <select id="filtroCategoria" onchange="filtrarPorCategoria()">
+                <option value="">Todas as Categorias</option>
+                <option value="Peixe">Peixes</option>
+                <option value="Mamífero">Mamíferos</option>
+                <option value="Invertebrado">Invertebrados</option>
+                <option value="Réptil">Répteis</option>
+                <option value="Alga">Algas</option>
+            </select>
+
+            <select id="filtroConservacao" onchange="filtrarPorConservacao()">
+                <option value="">Status de Conservação</option>
+                <option value="LC">LC - Pouco Preocupante</option>
+                <option value="NT">NT - Quase Ameaçada</option>
+                <option value="VU">VU - Vulnerável</option>
+                <option value="EN">EN - Em Perigo</option>
+                <option value="CR">CR - Criticamente em Perigo</option>
+            </select>
+        </div>
+
+        <div id="listaEspecies" class="especies-grid">
+            <!-- Preenchido via JavaScript -->
+        </div>
+    </div>
+
+    <script>
+        // Verificar autenticação
+        function checkAuth() {
+            const token = localStorage.getItem('token');
+            const username = localStorage.getItem('username');
+            const role = localStorage.getItem('role');
+            
+            if (!token) {
+                window.location.href = '/login';
+                return false;
+            }
+            
+            // Atualizar cabeçalho
+            const welcomeMsg = document.getElementById('welcomeMsg');
+            const btnAdmin = document.getElementById('btnAdmin');
+            
+            if (role === 'admin') {
+                welcomeMsg.textContent = 'Administrador: ' + username;
+                btnAdmin.style.display = 'inline-block';
+            } else {
+                welcomeMsg.textContent = 'Olá, ' + username;
+                btnAdmin.style.display = 'none';
+            }
+            
+            return true;
+        }
+
+        function logout() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('username');
+            localStorage.removeItem('role');
+            window.location.href = '/';
+        }
+
+        let todasEspecies = [];
+
+        // Carregar todas as espécies
+        async function carregarEspecies() {
+            if (!checkAuth()) return;
+            
+            const token = localStorage.getItem('token');
+            
+            try {
+                const response = await fetch('/api/especies', {
+                    headers: {
+                        'Authorization': 'Bearer ' + token
+                    }
+                });
+                
+                if (!response.ok) {
+                    if (response.status === 401) {
+                        logout();
+                        return;
+                    }
+                    throw new Error('Erro ao carregar espécies');
+                }
+                
+                todasEspecies = await response.json();
+                exibirEspecies(todasEspecies);
+            } catch (error) {
+                console.error('Erro ao carregar espécies:', error);
+                document.getElementById('listaEspecies').innerHTML = 
+                    '<p class="sem-dados">Erro ao carregar espécies. Tente novamente.</p>';
+            }
+        }
+
+        // Exibir espécies na grade
+        function exibirEspecies(especies) {
+            const container = document.getElementById('listaEspecies');
+
+            if (especies.length === 0) {
+                container.innerHTML = '<p class="sem-dados">Nenhuma espécie encontrada.</p>';
+                return;
+            }
+
+            container.innerHTML = especies.map(function(e) {
+                var imgHtml = e.imagemUrl ? '<img src="' + e.imagemUrl + '" alt="' + e.nomeComum + '" class="especie-imagem">' : '<div class="sem-imagem">🐠</div>';
+                var conservacaoHtml = e.statusConservacao ? '<span class="conservacao-badge ' + e.statusConservacao.toLowerCase() + '">' + e.statusConservacao + '</span>' : '';
+                return '<div class="especie-card" onclick="abrirDetalheEspecie(' + e.id + ')">' +
+                    imgHtml +
+                    '<div class="especie-info">' +
+                        '<h3>' + e.nomeComum + '</h3>' +
+                        '<p class="cientifico"><em>' + e.nomeCientifico + '</em></p>' +
+                        '<span class="categoria-badge">' + (e.categoria || 'N/A') + '</span>' +
+                        conservacaoHtml +
+                    '</div>' +
+                '</div>';
+            }).join('');
+        }
+
+        // Buscar espécies
+        async function buscarEspecies() {
+            const termo = document.getElementById('busca').value;
+            const token = localStorage.getItem('token');
+            
+            if (termo.trim() === '') {
+                exibirEspecies(todasEspecies);
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/especies/buscar?termo=' + encodeURIComponent(termo), {
+                    headers: {
+                        'Authorization': 'Bearer ' + token
+                    }
+                });
+                const especies = await response.json();
+                exibirEspecies(especies);
+            } catch (error) {
+                console.error('Erro ao buscar espécies:', error);
+            }
+        }
+
+        // Filtrar por categoria
+        async function filtrarPorCategoria() {
+            const categoria = document.getElementById('filtroCategoria').value;
+            const token = localStorage.getItem('token');
+            
+            if (categoria === '') {
+                exibirEspecies(todasEspecies);
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/especies/categoria/' + encodeURIComponent(categoria), {
+                    headers: {
+                        'Authorization': 'Bearer ' + token
+                    }
+                });
+                const especies = await response.json();
+                exibirEspecies(especies);
+            } catch (error) {
+                console.error('Erro ao filtrar por categoria:', error);
+            }
+        }
+
+        // Filtrar por status de conservação
+        async function filtrarPorConservacao() {
+            const status = document.getElementById('filtroConservacao').value;
+            const token = localStorage.getItem('token');
+            
+            if (status === '') {
+                exibirEspecies(todasEspecies);
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/especies/conservacao/' + encodeURIComponent(status), {
+                    headers: {
+                        'Authorization': 'Bearer ' + token
+                    }
+                });
+                const especies = await response.json();
+                exibirEspecies(especies);
+            } catch (error) {
+                console.error('Erro ao filtrar por conservação:', error);
+            }
+        }
+
+        // Abrir detalhes da espécie
+        async function abrirDetalheEspecie(id) {
+            const token = localStorage.getItem('token');
+            const username = localStorage.getItem('username');
+            const role = localStorage.getItem('role');
+            
+            try {
+                // Carregar espécie e comentários em paralelo
+                const [especieResponse, comentariosResponse] = await Promise.all([
+                    fetch('/api/especies/' + id, {
+                        headers: { 'Authorization': 'Bearer ' + token }
+                    }),
+                    fetch('/api/especies/' + id + '/comentarios', {
+                        headers: { 'Authorization': 'Bearer ' + token }
+                    })
+                ]);
+                
+                const especie = await especieResponse.json();
+                const comentarios = await comentariosResponse.json();
+
+                const modal = document.createElement('div');
+                modal.className = 'modal';
+                modal.id = 'modal-especie-' + id;
+                modal.onclick = function(e) {
+                    if (e.target === modal) modal.remove();
+                };
+                
+                var imgHtml = especie.imagemUrl ? '<img src="' + especie.imagemUrl + '" alt="' + especie.nomeComum + '" class="especie-imagem-grande">' : '';
+                var conservacaoClass = especie.statusConservacao ? especie.statusConservacao.toLowerCase() : '';
+                var caracteristicasHtml = especie.caracteristicasDistintivas ? '<p><strong>Características:</strong> ' + especie.caracteristicasDistintivas + '</p>' : '';
+                
+                // Gerar HTML dos comentários
+                var comentariosHtml = gerarHtmlComentarios(comentarios, id, username, role);
+                
+                modal.innerHTML = '<div class="modal-content">' +
+                    '<span class="close" onclick="this.parentElement.parentElement.remove()">&times;</span>' +
+                    '<h2>' + especie.nomeComum + '</h2>' +
+                    '<p class="cientifico-grande"><em>' + especie.nomeCientifico + '</em></p>' +
+                    imgHtml +
+                    '<div class="taxonomia">' +
+                        '<h3>🧬 Classificação Taxonômica</h3>' +
+                        '<p><strong>Reino:</strong> ' + (especie.reino || 'N/A') + '</p>' +
+                        '<p><strong>Filo:</strong> ' + (especie.filo || 'N/A') + '</p>' +
+                        '<p><strong>Classe:</strong> ' + (especie.classe || 'N/A') + '</p>' +
+                        '<p><strong>Ordem:</strong> ' + (especie.ordem || 'N/A') + '</p>' +
+                        '<p><strong>Família:</strong> ' + (especie.familia || 'N/A') + '</p>' +
+                        '<p><strong>Gênero:</strong> ' + (especie.genero || 'N/A') + '</p>' +
+                    '</div>' +
+                    '<div class="info-detalhada">' +
+                        '<h3>📋 Informações</h3>' +
+                        '<p><strong>Descrição:</strong> ' + (especie.descricao || 'N/A') + '</p>' +
+                        '<p><strong>Habitat:</strong> ' + (especie.habitat || 'N/A') + '</p>' +
+                        '<p><strong>Distribuição:</strong> ' + (especie.distribuicaoGeografica || 'N/A') + '</p>' +
+                        '<p><strong>Dieta:</strong> ' + (especie.dieta || 'N/A') + '</p>' +
+                        '<p><strong>Conservação:</strong> <span class="conservacao-badge ' + conservacaoClass + '">' + (especie.statusConservacao || 'N/A') + '</span></p>' +
+                        caracteristicasHtml +
+                    '</div>' +
+                    comentariosHtml +
+                '</div>';
+                document.body.appendChild(modal);
+            } catch (error) {
+                console.error('Erro ao carregar detalhes:', error);
+            }
+        }
+
+        // Gerar HTML dos comentários
+        function gerarHtmlComentarios(comentarios, especieId, username, role) {
+            var countBadge = '<span class="comentarios-count">' + comentarios.length + '</span>';
+            
+            var formHtml = '<div class="form-comentario">' +
+                '<textarea id="texto-comentario-' + especieId + '" placeholder="Escreva seu comentário sobre esta espécie..." maxlength="1000"></textarea>' +
+                '<button class="btn-comentar" onclick="adicionarComentario(' + especieId + ')">💬 Comentar</button>' +
+            '</div>';
+            
+            var listaHtml = '';
+            if (comentarios.length === 0) {
+                listaHtml = '<p class="sem-comentarios">Seja o primeiro a comentar sobre esta espécie!</p>';
+            } else {
+                listaHtml = '<div class="lista-comentarios" id="lista-comentarios-' + especieId + '">';
+                comentarios.forEach(function(c) {
+                    listaHtml += gerarHtmlComentarioItem(c, especieId, username, role);
+                });
+                listaHtml += '</div>';
+            }
+            
+            return '<div class="comentarios-section">' +
+                '<h3>💬 Comentários' + countBadge + '</h3>' +
+                formHtml +
+                listaHtml +
+            '</div>';
+        }
+
+        // Gerar HTML de um comentário individual
+        function gerarHtmlComentarioItem(comentario, especieId, username, role) {
+            var dataFormatada = new Date(comentario.dataCriacao).toLocaleString('pt-BR');
+            var canDelete = role === 'admin' || comentario.usuarioNome === username;
+            var deleteBtn = canDelete ? 
+                '<div class="comentario-actions"><button class="btn-delete-comentario" onclick="deletarComentario(' + especieId + ', ' + comentario.id + ')">🗑️ Excluir</button></div>' : '';
+            
+            return '<div class="comentario-item" id="comentario-' + comentario.id + '">' +
+                '<div class="comentario-header">' +
+                    '<span class="comentario-autor">👤 ' + comentario.usuarioNome + '</span>' +
+                    '<span class="comentario-data">' + dataFormatada + '</span>' +
+                '</div>' +
+                '<p class="comentario-texto">' + escapeHtml(comentario.texto) + '</p>' +
+                deleteBtn +
+            '</div>';
+        }
+
+        // Escape HTML para prevenir XSS
+        function escapeHtml(text) {
+            var div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Adicionar comentário
+        async function adicionarComentario(especieId) {
+            const token = localStorage.getItem('token');
+            const textarea = document.getElementById('texto-comentario-' + especieId);
+            const texto = textarea.value.trim();
+            
+            if (!texto) {
+                alert('Por favor, escreva um comentário.');
+                return;
+            }
+            
+            try {
+                const response = await fetch('/api/especies/' + especieId + '/comentarios', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': 'Bearer ' + token,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ texto: texto })
+                });
+                
+                if (response.ok) {
+                    // Recarregar modal com novo comentário
+                    document.getElementById('modal-especie-' + especieId).remove();
+                    abrirDetalheEspecie(especieId);
+                } else {
+                    const error = await response.json();
+                    alert(error.error || 'Erro ao adicionar comentário');
+                }
+            } catch (error) {
+                console.error('Erro ao adicionar comentário:', error);
+                alert('Erro ao adicionar comentário. Tente novamente.');
+            }
+        }
+
+        // Deletar comentário
+        async function deletarComentario(especieId, comentarioId) {
+            if (!confirm('Tem certeza que deseja excluir este comentário?')) {
+                return;
+            }
+            
+            const token = localStorage.getItem('token');
+            
+            try {
+                const response = await fetch('/api/especies/' + especieId + '/comentarios/' + comentarioId, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': 'Bearer ' + token
+                    }
+                });
+                
+                if (response.ok) {
+                    // Recarregar modal
+                    document.getElementById('modal-especie-' + especieId).remove();
+                    abrirDetalheEspecie(especieId);
+                } else {
+                    const error = await response.json();
+                    alert(error.error || 'Erro ao excluir comentário');
+                }
+            } catch (error) {
+                console.error('Erro ao excluir comentário:', error);
+                alert('Erro ao excluir comentário. Tente novamente.');
+            }
+        }
+
+        // Inicializar
+        carregarEspecies();
+    </script>
+</body>
+</html>

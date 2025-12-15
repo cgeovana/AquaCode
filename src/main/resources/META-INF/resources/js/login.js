@@ -26,9 +26,9 @@ function login(){
             localStorage.setItem('username', data.username);
             localStorage.setItem('role', data.role);
             
-            // Redirecionar para página de animais
+            // Redirecionar para página do catálogo
             alert(data.message);
-            location.href = '/animais';
+            location.href = '/especies/listar';
         })
         .catch(error => {
             // Handle any errors during the fetch or parsing
@@ -77,7 +77,7 @@ async function fazerLogin(event) {
             
             // Redirecionar após 1 segundo
             setTimeout(() => {
-                window.location.href = '/animais';
+                window.location.href = '/especies/listar';
             }, 1000);
         } else {
             const errorData = await response.json();

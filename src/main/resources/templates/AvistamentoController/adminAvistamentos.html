@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Administração de Avistamentos - AquaCode</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        /* Cabeçalho fixo */
+        .header-nav {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.8em;
+            font-weight: bold;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            cursor: pointer;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+            list-style: none;
+            align-items: center;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #2c3e50;
+            font-weight: 600;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: #667eea;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .welcome-msg {
+            color: #2c3e50;
+            font-weight: 600;
+        }
+
+        .btn-logout {
+            background: #e74c3c;
+            color: white;
+            padding: 8px 20px;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+
+        .btn-logout:hover {
+            background: #c0392b;
+        }
+
+        /* Container principal */
+        .container {
+            max-width: 1400px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .page-title {
+            color: white;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .page-subtitle {
+            color: white;
+            font-size: 1.2em;
+            margin-bottom: 30px;
+            opacity: 0.9;
+        }
+
+        /* Filtros e estatísticas */
+        .stats-bar {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2.5em;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .stat-number.pendente { color: #f39c12; }
+        .stat-number.aprovado { color: #27ae60; }
+        .stat-number.rejeitado { color: #e74c3c; }
+        .stat-number.total { color: #3498db; }
+
+        .stat-label {
+            color: #7f8c8d;
+            font-size: 0.9em;
+            text-transform: uppercase;
+        }
+
+        /* Filtros */
+        .filters {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+            margin-bottom: 30px;
+            display: flex;
+            gap: 15px;
+            align-items: end;
+            flex-wrap: wrap;
+        }
+
+        .filter-group {
+            flex: 1;
+            min-width: 180px;
+        }
+
+        .filter-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #2c3e50;
+            font-weight: 600;
+            font-size: 0.9em;
+        }
+
+        .filter-group select,
+        .filter-group input {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1em;
+        }
+
+        .btn-filter {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 10px 25px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            height: 42px;
+        }
+
+        /* Tabela */
+        .table-container {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        th {
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        td {
+            padding: 15px;
+            border-bottom: 1px solid #e0e0e0;
+            color: #2c3e50;
+        }
+
+        tbody tr:hover {
+            background: #f8f9fa;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.85em;
+            font-weight: bold;
+        }
+
+        .status-PENDENTE { background: #fff3cd; color: #856404; }
+        .status-APROVADO { background: #d4edda; color: #155724; }
+        .status-REJEITADO { background: #f8d7da; color: #721c24; }
+
+        .btn-action {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9em;
+            font-weight: bold;
+            margin-right: 5px;
+            transition: opacity 0.3s;
+        }
+
+        .btn-action:hover {
+            opacity: 0.8;
+        }
+
+        .btn-aprovar { background: #27ae60; color: white; }
+        .btn-rejeitar { background: #e74c3c; color: white; }
+        .btn-detalhes { background: #3498db; color: white; }
+        .btn-deletar { background: #95a5a6; color: white; }
+
+        .loading {
+            text-align: center;
+            color: white;
+            font-size: 1.5em;
+            padding: 40px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 40px;
+            color: #7f8c8d;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            font-size: 1.8em;
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+
+        .modal-body {
+            margin-bottom: 20px;
+        }
+
+        .modal-body p {
+            margin-bottom: 10px;
+            color: #2c3e50;
+        }
+
+        .modal-body strong {
+            color: #667eea;
+        }
+
+        .modal-footer {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+
+        .btn-modal {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .btn-close {
+            background: #95a5a6;
+            color: white;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #2c3e50;
+            font-weight: 600;
+        }
+
+        .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-family: inherit;
+            resize: vertical;
+        }
+
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+
+            .stats-bar {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .filters {
+                flex-direction: column;
+            }
+
+            .filter-group {
+                width: 100%;
+            }
+
+            .table-container {
+                overflow-x: auto;
+            }
+
+            table {
+                min-width: 800px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Cabeçalho -->
+    <nav class="header-nav">
+        <div class="nav-container">
+            <div class="logo" onclick="window.location.href='/'">🐋 AquaCode</div>
+            <ul class="nav-links">
+                <li><a href="/">Início</a></li>
+                <li><a href="/especies/listar">Catálogo</a></li>
+                <li><a href="/avistamentos/admin">Admin Avistamentos</a></li>
+                <li><a href="/quiz">Quiz</a></li>
+            </ul>
+            <div class="user-info">
+                <span class="welcome-msg" id="welcomeMsg"></span>
+                <button onclick="logout()" class="btn-logout">Sair</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Conteúdo -->
+    <div class="container">
+        <h1 class="page-title">🛡️ Administração de Avistamentos</h1>
+        <p class="page-subtitle">Gerencie e modere os avistamentos submetidos</p>
+
+        <!-- Estatísticas -->
+        <div class="stats-bar">
+            <div class="stat-card">
+                <div class="stat-number total" id="statTotal">0</div>
+                <div class="stat-label">Total</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number pendente" id="statPendente">0</div>
+                <div class="stat-label">Pendentes</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number aprovado" id="statAprovado">0</div>
+                <div class="stat-label">Aprovados</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number rejeitado" id="statRejeitado">0</div>
+                <div class="stat-label">Rejeitados</div>
+            </div>
+        </div>
+
+        <!-- Filtros -->
+        <div class="filters">
+            <div class="filter-group">
+                <label for="filtroStatus">Status</label>
+                <select id="filtroStatus">
+                    <option value="">Todos</option>
+                    <option value="PENDENTE" selected>Pendentes</option>
+                    <option value="APROVADO">Aprovados</option>
+                    <option value="REJEITADO">Rejeitados</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label for="filtroEspecie">Espécie</label>
+                <input type="text" id="filtroEspecie" placeholder="Buscar por espécie...">
+            </div>
+            <button class="btn-filter" onclick="carregarAvistamentos()">🔍 Filtrar</button>
+        </div>
+
+        <!-- Tabela -->
+        <div id="loading" class="loading">Carregando avistamentos...</div>
+        
+        <div id="tableContainer" class="table-container" style="display: none;">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Espécie</th>
+                        <th>Usuário</th>
+                        <th>Data/Hora</th>
+                        <th>Local</th>
+                        <th>Status</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                    <!-- Preenchido via JavaScript -->
+                </tbody>
+            </table>
+        </div>
+
+        <div id="emptyState" class="empty-state" style="display: none;">
+            <h3>Nenhum avistamento encontrado</h3>
+            <p>Não há avistamentos com os filtros selecionados.</p>
+        </div>
+    </div>
+
+    <!-- Modal de Detalhes -->
+    <div id="modalDetalhes" class="modal">
+        <div class="modal-content">
+            <h2 class="modal-header">Detalhes do Avistamento</h2>
+            <div class="modal-body" id="modalBody">
+                <!-- Preenchido via JavaScript -->
+            </div>
+            <div class="modal-footer">
+                <button class="btn-modal btn-close" onclick="fecharModal()">Fechar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Moderação -->
+    <div id="modalModeracao" class="modal">
+        <div class="modal-content">
+            <h2 class="modal-header" id="modalModeracaoTitulo">Moderar Avistamento</h2>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="comentarioModeracao">Comentário (opcional)</label>
+                    <textarea id="comentarioModeracao" rows="4" placeholder="Adicione um comentário sobre a moderação..."></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-modal btn-close" onclick="fecharModal()">Cancelar</button>
+                <button class="btn-modal btn-aprovar" id="btnConfirmarModeracao">Confirmar</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let avistamentos = [];
+        let avistamentoSelecionado = null;
+
+        // Verificar autenticação (apenas admin)
+        function checkAuth() {
+            const token = localStorage.getItem('token');
+            const username = localStorage.getItem('username');
+            const role = localStorage.getItem('role');
+            
+            if (!token || role !== 'admin') {
+                alert('Acesso negado. Apenas administradores podem acessar esta página.');
+                window.location.href = '/';
+                return false;
+            }
+            
+            document.getElementById('welcomeMsg').textContent = 'Administrador: ' + username;
+            return true;
+        }
+
+        function logout() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('username');
+            localStorage.removeItem('role');
+            window.location.href = '/';
+        }
+
+        async function carregarAvistamentos() {
+            if (!checkAuth()) return;
+
+            const token = localStorage.getItem('token');
+            const status = document.getElementById('filtroStatus').value;
+            const especie = document.getElementById('filtroEspecie').value;
+
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('tableContainer').style.display = 'none';
+            document.getElementById('emptyState').style.display = 'none';
+
+            try {
+                let url = '/api/avistamentos';
+                if (status === 'PENDENTE') url = '/api/avistamentos/pendentes';
+                else if (status === 'APROVADO') url = '/api/avistamentos/aprovados';
+
+                const response = await fetch(url, {
+                    headers: { 'Authorization': 'Bearer ' + token }
+                });
+
+                if (!response.ok) {
+                    if (response.status === 401) {
+                        logout();
+                        return;
+                    }
+                    throw new Error('Erro ao carregar avistamentos');
+                }
+
+                avistamentos = await response.json();
+
+                // Filtrar por espécie se especificado
+                if (especie) {
+                    avistamentos = avistamentos.filter(function(a) {
+                        return a.nomeEspecie.toLowerCase().includes(especie.toLowerCase()) ||
+                            (a.nomeCientifico && a.nomeCientifico.toLowerCase().includes(especie.toLowerCase()));
+                    });
+                }
+
+                // Filtrar por status se não for endpoint específico
+                if (status && url === '/api/avistamentos') {
+                    avistamentos = avistamentos.filter(function(a) { return a.status === status; });
+                }
+
+                atualizarEstatisticas();
+                renderizarTabela();
+
+            } catch (error) {
+                console.error('Erro:', error);
+                document.getElementById('loading').textContent = 'Erro ao carregar avistamentos';
+            }
+        }
+
+        function atualizarEstatisticas() {
+            const total = avistamentos.length;
+            const pendentes = avistamentos.filter(function(a) { return a.status === 'PENDENTE'; }).length;
+            const aprovados = avistamentos.filter(function(a) { return a.status === 'APROVADO'; }).length;
+            const rejeitados = avistamentos.filter(function(a) { return a.status === 'REJEITADO'; }).length;
+
+            document.getElementById('statTotal').textContent = total;
+            document.getElementById('statPendente').textContent = pendentes;
+            document.getElementById('statAprovado').textContent = aprovados;
+            document.getElementById('statRejeitado').textContent = rejeitados;
+        }
+
+        function renderizarTabela() {
+            const tableBody = document.getElementById('tableBody');
+            const loading = document.getElementById('loading');
+            const tableContainer = document.getElementById('tableContainer');
+            const emptyState = document.getElementById('emptyState');
+
+            loading.style.display = 'none';
+
+            if (avistamentos.length === 0) {
+                emptyState.style.display = 'block';
+                return;
+            }
+
+            tableContainer.style.display = 'block';
+
+            tableBody.innerHTML = avistamentos.map(function(a) {
+                var data = new Date(a.dataHoraAvistamento).toLocaleString('pt-BR');
+                var local = a.localDescricao || (a.latitude.toFixed(4) + ', ' + a.longitude.toFixed(4));
+                var usuario = a.usuario ? a.usuario.username : 'N/A';
+
+                return '<tr>' +
+                    '<td>' + a.id + '</td>' +
+                    '<td><strong>' + a.nomeEspecie + '</strong><br><small style="color: #888">' + (a.nomeCientifico || '') + '</small></td>' +
+                    '<td>' + usuario + '</td>' +
+                    '<td>' + data + '</td>' +
+                    '<td>' + local + '</td>' +
+                    '<td><span class="status-badge status-' + a.status + '">' + a.status + '</span></td>' +
+                    '<td>' +
+                        '<button class="btn-action btn-detalhes" onclick="verDetalhes(' + a.id + ')">📋 Ver</button>' +
+                        (a.status === 'PENDENTE' ? 
+                            '<button class="btn-action btn-aprovar" onclick="abrirModeracao(' + a.id + ', \'APROVADO\')">✓ Aprovar</button>' +
+                            '<button class="btn-action btn-rejeitar" onclick="abrirModeracao(' + a.id + ', \'REJEITADO\')">✗ Rejeitar</button>'
+                            : '') +
+                        '<button class="btn-action btn-deletar" onclick="deletarAvistamento(' + a.id + ')">🗑️</button>' +
+                    '</td>' +
+                '</tr>';
+            }).join('');
+        }
+
+        function verDetalhes(id) {
+            var avistamento = avistamentos.find(function(a) { return a.id === id; });
+            if (!avistamento) return;
+
+            var html = '<p><strong>ID:</strong> ' + avistamento.id + '</p>' +
+                '<p><strong>Espécie:</strong> ' + avistamento.nomeEspecie + '</p>' +
+                (avistamento.nomeCientifico ? '<p><strong>Nome Científico:</strong> ' + avistamento.nomeCientifico + '</p>' : '') +
+                '<p><strong>Data/Hora:</strong> ' + new Date(avistamento.dataHoraAvistamento).toLocaleString('pt-BR') + '</p>' +
+                '<p><strong>Coordenadas:</strong> ' + avistamento.latitude + ', ' + avistamento.longitude + '</p>' +
+                (avistamento.localDescricao ? '<p><strong>Local:</strong> ' + avistamento.localDescricao + '</p>' : '') +
+                (avistamento.observacoes ? '<p><strong>Observações:</strong> ' + avistamento.observacoes + '</p>' : '') +
+                (avistamento.fotoUrl ? '<p><strong>Foto:</strong> <a href="' + avistamento.fotoUrl + '" target="_blank">Ver foto</a></p>' : '') +
+                '<p><strong>Status:</strong> <span class="status-badge status-' + avistamento.status + '">' + avistamento.status + '</span></p>' +
+                '<p><strong>Submetido em:</strong> ' + new Date(avistamento.dataSubmissao).toLocaleString('pt-BR') + '</p>' +
+                (avistamento.usuario ? '<p><strong>Usuário:</strong> ' + avistamento.usuario.username + ' (' + avistamento.usuario.email + ')</p>' : '') +
+                (avistamento.moderadoPor ? '<p><strong>Moderado por:</strong> ' + avistamento.moderadoPor + '</p>' : '') +
+                (avistamento.dataModeracao ? '<p><strong>Data Moderação:</strong> ' + new Date(avistamento.dataModeracao).toLocaleString('pt-BR') + '</p>' : '') +
+                (avistamento.comentarioModeracao ? '<p><strong>Comentário Moderação:</strong> ' + avistamento.comentarioModeracao + '</p>' : '');
+
+            document.getElementById('modalBody').innerHTML = html;
+            document.getElementById('modalDetalhes').classList.add('active');
+        }
+
+        function abrirModeracao(id, novoStatus) {
+            avistamentoSelecionado = { id: id, status: novoStatus };
+            
+            var titulo = novoStatus === 'APROVADO' ? '✓ Aprovar Avistamento' : '✗ Rejeitar Avistamento';
+            document.getElementById('modalModeracaoTitulo').textContent = titulo;
+            document.getElementById('comentarioModeracao').value = '';
+            
+            var btnConfirmar = document.getElementById('btnConfirmarModeracao');
+            btnConfirmar.className = 'btn-modal ' + (novoStatus === 'APROVADO' ? 'btn-aprovar' : 'btn-rejeitar');
+            btnConfirmar.textContent = novoStatus === 'APROVADO' ? 'Aprovar' : 'Rejeitar';
+            
+            document.getElementById('modalModeracao').classList.add('active');
+        }
+
+        async function moderarAvistamento() {
+            if (!avistamentoSelecionado) return;
+
+            var token = localStorage.getItem('token');
+            var comentario = document.getElementById('comentarioModeracao').value;
+
+            try {
+                var response = await fetch('/api/avistamentos/' + avistamentoSelecionado.id + '/moderar', {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + token
+                    },
+                    body: JSON.stringify({
+                        status: avistamentoSelecionado.status,
+                        comentario: comentario
+                    })
+                });
+
+                if (!response.ok) {
+                    if (response.status === 401) {
+                        logout();
+                        return;
+                    }
+                    throw new Error('Erro ao moderar avistamento');
+                }
+
+                fecharModal();
+                carregarAvistamentos();
+                alert('Avistamento moderado com sucesso!');
+
+            } catch (error) {
+                console.error('Erro:', error);
+                alert('Erro ao moderar avistamento. Tente novamente.');
+            }
+        }
+
+        async function deletarAvistamento(id) {
+            if (!confirm('Tem certeza que deseja deletar este avistamento? Esta ação não pode ser desfeita.')) {
+                return;
+            }
+
+            var token = localStorage.getItem('token');
+
+            try {
+                var response = await fetch('/api/avistamentos/' + id, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': 'Bearer ' + token }
+                });
+
+                if (!response.ok) {
+                    if (response.status === 401) {
+                        logout();
+                        return;
+                    }
+                    throw new Error('Erro ao deletar avistamento');
+                }
+
+                carregarAvistamentos();
+                alert('Avistamento deletado com sucesso!');
+
+            } catch (error) {
+                console.error('Erro:', error);
+                alert('Erro ao deletar avistamento. Tente novamente.');
+            }
+        }
+
+        function fecharModal() {
+            document.getElementById('modalDetalhes').classList.remove('active');
+            document.getElementById('modalModeracao').classList.remove('active');
+            avistamentoSelecionado = null;
+        }
+
+        // Event listeners
+        document.getElementById('btnConfirmarModeracao').addEventListener('click', moderarAvistamento);
+
+        // Fechar modal ao clicar fora
+        document.getElementById('modalDetalhes').addEventListener('click', function(e) {
+            if (e.target === this) fecharModal();
+        });
+        document.getElementById('modalModeracao').addEventListener('click', function(e) {
+            if (e.target === this) fecharModal();
+        });
+
+        // Inicializar
+        if (checkAuth()) {
+            carregarAvistamentos();
+        }
+    </script>
+</body>
+</html>

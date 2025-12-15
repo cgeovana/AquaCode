@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AquaCode - Animais</title>
+    <title>Meus Avistamentos - AquaCode</title>
     <style>
         * {
             margin: 0;
@@ -110,22 +110,43 @@
             padding: 0 20px;
         }
 
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
         .page-title {
-            text-align: center;
             color: white;
             font-size: 2.5em;
-            margin-bottom: 40px;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
         }
 
-        /* Grid de animais */
-        .animals-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 30px;
+        .btn-novo {
+            background: linear-gradient(135deg, #27ae60 0%, #229954 100%);
+            color: white;
+            padding: 15px 30px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: transform 0.3s;
         }
 
-        .animal-card {
+        .btn-novo:hover {
+            transform: translateY(-3px);
+        }
+
+        /* Grid de avistamentos */
+        .avistamentos-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 25px;
+        }
+
+        .avistamento-card {
             background: white;
             border-radius: 20px;
             overflow: hidden;
@@ -133,13 +154,13 @@
             transition: transform 0.3s;
         }
 
-        .animal-card:hover {
-            transform: translateY(-10px);
+        .avistamento-card:hover {
+            transform: translateY(-5px);
         }
 
-        .animal-image {
+        .avistamento-imagem {
             width: 100%;
-            height: 200px;
+            height: 180px;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             display: flex;
             align-items: center;
@@ -147,23 +168,39 @@
             font-size: 4em;
         }
 
-        .animal-content {
+        .avistamento-imagem img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .avistamento-content {
             padding: 20px;
         }
 
-        .animal-name {
-            font-size: 1.5em;
+        .avistamento-especie {
+            font-size: 1.4em;
             color: #2c3e50;
-            margin-bottom: 10px;
+            margin-bottom: 5px;
         }
 
-        .animal-info {
+        .avistamento-cientifico {
+            color: #888;
+            font-style: italic;
+            margin-bottom: 15px;
+        }
+
+        .avistamento-info {
             color: #666;
             margin-bottom: 8px;
             font-size: 0.95em;
         }
 
-        .animal-status {
+        .avistamento-info strong {
+            color: #2c3e50;
+        }
+
+        .status-badge {
             display: inline-block;
             padding: 5px 15px;
             border-radius: 15px;
@@ -172,40 +209,28 @@
             margin-top: 10px;
         }
 
-        .status-ativo { background: #d4edda; color: #155724; }
-        .status-em-tratamento { background: #fff3cd; color: #856404; }
-        .status-recuperado { background: #d1ecf1; color: #0c5460; }
-        .status-falecido { background: #f8d7da; color: #721c24; }
+        .status-pendente { background: #fff3cd; color: #856404; }
+        .status-verificado { background: #d4edda; color: #155724; }
+        .status-rejeitado { background: #f8d7da; color: #721c24; }
 
-        .btn-details {
-            width: 100%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 12px;
-            border: none;
-            border-radius: 10px;
-            font-weight: bold;
-            cursor: pointer;
-            margin-top: 15px;
-            transition: transform 0.3s;
-        }
-
-        .btn-details:hover {
-            transform: translateY(-2px);
-        }
-
-        .no-animals {
+        .sem-avistamentos {
             text-align: center;
             color: white;
-            font-size: 1.5em;
+            font-size: 1.3em;
             padding: 60px 20px;
             background: rgba(255,255,255,0.1);
             border-radius: 20px;
+            grid-column: 1 / -1;
         }
 
         @media (max-width: 768px) {
             .nav-links {
                 display: none;
+            }
+            
+            .page-header {
+                flex-direction: column;
+                text-align: center;
             }
         }
     </style>
@@ -233,8 +258,14 @@
 
     <!-- Conteúdo -->
     <div class="container">
-        <h1 class="page-title">🐠 Nossos Animais Marinhos</h1>
-        <div id="animalsContainer" class="animals-grid"></div>
+        <div class="page-header">
+            <h1 class="page-title">📋 Meus Avistamentos</h1>
+            <a href="/avistamentos/registrar" class="btn-novo">+ Novo Avistamento</a>
+        </div>
+
+        <div id="listaAvistamentos" class="avistamentos-grid">
+            <!-- Preenchido via JavaScript -->
+        </div>
     </div>
 
     <script>
@@ -243,15 +274,12 @@
             const token = localStorage.getItem('token');
             const username = localStorage.getItem('username');
             const role = localStorage.getItem('role');
-
-            console.log('role:', role);
             
             if (!token) {
                 window.location.href = '/login';
                 return false;
             }
             
-            // Atualizar cabeçalho
             const welcomeMsg = document.getElementById('welcomeMsg');
             const btnAdmin = document.getElementById('btnAdmin');
             
@@ -273,14 +301,13 @@
             window.location.href = '/';
         }
 
-        // Carregar animais
-        async function loadAnimals() {
+        async function carregarMeusAvistamentos() {
             if (!checkAuth()) return;
             
             const token = localStorage.getItem('token');
             
             try {
-                const response = await fetch('/animais/api', {
+                const response = await fetch('/api/avistamentos/meus', {
                     headers: {
                         'Authorization': 'Bearer ' + token
                     }
@@ -291,68 +318,57 @@
                         logout();
                         return;
                     }
-                    throw new Error('Erro ao carregar animais');
+                    throw new Error('Erro ao carregar avistamentos');
                 }
                 
-                const animals = await response.json();
-                displayAnimals(animals);
+                const avistamentos = await response.json();
+                exibirAvistamentos(avistamentos);
             } catch (error) {
                 console.error('Erro:', error);
-                document.getElementById('animalsContainer').innerHTML = 
-                    '<div class="no-animals">Erro ao carregar animais</div>';
+                document.getElementById('listaAvistamentos').innerHTML = 
+                    '<div class="sem-avistamentos">Erro ao carregar avistamentos.</div>';
             }
         }
 
-        function displayAnimals(animals) {
-            const container = document.getElementById('animalsContainer');
+        function exibirAvistamentos(avistamentos) {
+            const container = document.getElementById('listaAvistamentos');
             
-            if (animals.length === 0) {
-                container.innerHTML = '<div class="no-animals">Nenhum animal cadastrado ainda</div>';
+            if (avistamentos.length === 0) {
+                container.innerHTML = '<div class="sem-avistamentos">' +
+                    '<p>Você ainda não registrou nenhum avistamento.</p>' +
+                    '<p style="margin-top: 15px">' +
+                        '<a href="/avistamentos/registrar" style="color: white; text-decoration: underline">' +
+                            'Clique aqui para registrar seu primeiro avistamento!' +
+                        '</a>' +
+                    '</p>' +
+                '</div>';
                 return;
             }
             
-            container.innerHTML = animals.map(animal => {
-                const statusClass = 'status-' + (animal.status || 'ativo').toLowerCase().replace(' ', '-');
-                const emoji = getAnimalEmoji(animal.especie);
-                const descricaoHtml = animal.descricao ? '<p class="animal-info">' + animal.descricao + '</p>' : '';
+            container.innerHTML = avistamentos.map(function(a) {
+                var statusClass = 'status-' + (a.status || 'pendente').toLowerCase();
+                var data = new Date(a.dataHoraAvistamento).toLocaleString('pt-BR');
+                var imgHtml = a.fotoUrl ? '<img src="' + a.fotoUrl + '" alt="' + a.nomeEspecie + '">' : '📍';
+                var cientificoHtml = a.nomeCientifico ? '<p class="avistamento-cientifico">' + a.nomeCientifico + '</p>' : '';
+                var localHtml = a.localDescricao || (a.latitude + ', ' + a.longitude);
+                var observacoesHtml = a.observacoes ? '<p class="avistamento-info"><strong>📝</strong> ' + a.observacoes + '</p>' : '';
                 
-                return '<div class="animal-card">' +
-                    '<div class="animal-image">' + emoji + '</div>' +
-                    '<div class="animal-content">' +
-                        '<h3 class="animal-name">' + animal.nome + '</h3>' +
-                        '<p class="animal-info"><strong>Espécie:</strong> ' + animal.especie + '</p>' +
-                        '<p class="animal-info"><strong>Idade:</strong> ' + animal.idade + ' anos</p>' +
-                        '<p class="animal-info"><strong>Habitat:</strong> ' + animal.habitat + '</p>' +
-                        descricaoHtml +
-                        '<span class="animal-status ' + statusClass + '">' + (animal.status || 'Ativo') + '</span>' +
-                        '<button class="btn-details" onclick="viewDetails(' + animal.id + ')">' +
-                            'Ver Detalhes e Comentar' +
-                        '</button>' +
+                return '<div class="avistamento-card">' +
+                    '<div class="avistamento-imagem">' + imgHtml + '</div>' +
+                    '<div class="avistamento-content">' +
+                        '<h3 class="avistamento-especie">' + a.nomeEspecie + '</h3>' +
+                        cientificoHtml +
+                        '<p class="avistamento-info"><strong>📅</strong> ' + data + '</p>' +
+                        '<p class="avistamento-info"><strong>📍</strong> ' + localHtml + '</p>' +
+                        observacoesHtml +
+                        '<span class="status-badge ' + statusClass + '">' + (a.status || 'Pendente') + '</span>' +
                     '</div>' +
                 '</div>';
             }).join('');
         }
 
-        function getAnimalEmoji(especie) {
-            const lower = especie.toLowerCase();
-            if (lower.includes('tartaruga')) return '🐢';
-            if (lower.includes('golfinho')) return '🐬';
-            if (lower.includes('baleia')) return '🐋';
-            if (lower.includes('tubarão') || lower.includes('tubarao')) return '🦈';
-            if (lower.includes('polvo')) return '🐙';
-            if (lower.includes('peixe')) return '🐠';
-            if (lower.includes('caranguejo')) return '🦀';
-            if (lower.includes('estrela')) return '⭐';
-            return '🐟';
-        }
-
-        function viewDetails(id) {
-            // Abrir modal ou redirecionar para página de detalhes
-            window.location.href = '/animal/detalhes/' + id;
-        }
-
         // Inicializar
-        loadAnimals();
+        carregarMeusAvistamentos();
     </script>
 </body>
 </html>
