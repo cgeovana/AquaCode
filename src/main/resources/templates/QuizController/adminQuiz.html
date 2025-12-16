@@ -831,23 +831,20 @@
         // Toggle Ativo
         async function toggleQuizAtivo(quizId, novoStatus) {
             const token = localStorage.getItem('token');
-            const quiz = quizzes.find(q => q.id === quizId);
-            
-            if (!quiz) return;
-            
-            quiz.ativo = novoStatus;
             
             try {
-                const response = await fetch('/api/quiz/' + quizId, {
+                const response = await fetch('/api/quiz/' + quizId + '/toggle-ativo', {
                     method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json',
                         'Authorization': 'Bearer ' + token
-                    },
-                    body: JSON.stringify(quiz)
+                    }
                 });
 
                 if (!response.ok) throw new Error('Erro ao atualizar quiz');
+                
+                const resultado = await response.json();
+                console.log(resultado.mensagem);
                 
                 carregarQuizzes();
                 

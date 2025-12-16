@@ -105,6 +105,26 @@ public class QuizController {
         return Response.ok(quiz).build();
     }
 
+    @PUT
+    @Path("/{id}/toggle-ativo")
+    @Transactional
+    @RolesAllowed("admin")
+    public Response toggleAtivo(@PathParam("id") Long id) {
+        Quiz quiz = quizRepository.findById(id);
+        if (quiz == null) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+        
+        quiz.setAtivo(!quiz.getAtivo());
+        
+        Map<String, Object> resultado = new HashMap<>();
+        resultado.put("id", quiz.getId());
+        resultado.put("ativo", quiz.getAtivo());
+        resultado.put("mensagem", quiz.getAtivo() ? "Quiz ativado com sucesso" : "Quiz desativado com sucesso");
+        
+        return Response.ok(resultado).build();
+    }
+
     @POST
     @Path("/{id}/questoes")
     @Transactional
